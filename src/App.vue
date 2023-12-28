@@ -3,17 +3,19 @@ import Footer from "./global/footer.vue";
 import Header from "./global/header.vue";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-
-const router = useRouter();
+import { SearchResultBook } from "./pages/BookSearch.vue";
 
 export type Book = {
-  id: number | null;
+  seq: number | null;
+  bookId: string;
   title: string;
   description: string;
   image: string;
-  readDate: string | null;
-  memo: string | null;
+  readDate: string;
+  memo: string;
 };
+
+const router = useRouter();
 const books = ref<Book[]>([]);
 const newBook = ref<string>("");
 const STORAGE_KEY = "books";
@@ -28,9 +30,16 @@ onMounted(() => {
   }
 });
 
-const addBook = (book: Book) => {
+// TODO 重複登録できないようにする
+const addBook = (book: SearchResultBook) => {
+  const currentSeq =
+    books.value.length > 0
+      ? Math.max(...books.value.map((b) => b.seq || 0)) + 1
+      : 1;
+
   books.value.push({
-    id: books.value.length,
+    seq: currentSeq,
+    bookId: book.bookId,
     title: book.title,
     description: book.description,
     image: book.image,
@@ -39,10 +48,11 @@ const addBook = (book: Book) => {
   });
   newBook.value = "";
   saveBooks();
-  const pageId = books.value.slice(-1)[0].id as number;
+  const pageId = books.value.slice(-1)[0].seq as number;
   goToEditPage(pageId);
 };
 
+// TODO 削除機能の追加
 const removeBook = (x: number) => {
   books.value.splice(x, 1);
   saveBooks();
@@ -54,18 +64,19 @@ const saveBooks = () => {
 };
 
 const updateBookInfo = (book: Book) => {
-  const bookId = book.id!;
+  const seq = book.seq!;
 
   const updateInfo = {
-    id: bookId,
+    seq: seq,
+    bookId: books.value[seq - 1].bookId,
     readDate: book.readDate,
     memo: book.memo,
-    title: books.value[bookId].title,
-    image: books.value[bookId].image,
-    description: books.value[bookId].description,
+    title: books.value[seq - 1].title,
+    image: books.value[seq - 1].image,
+    description: books.value[seq - 1].description,
   };
 
-  books.value.splice(bookId, 1, updateInfo);
+  books.value.splice(seq - 1, 1, updateInfo);
   saveBooks();
   router.push("/");
 };
@@ -83,6 +94,8 @@ const deleteLocalStorage = () => {
     window.location.reload();
   }
 };
+
+// TODO ソート機能を追加する？
 </script>
 
 <template>

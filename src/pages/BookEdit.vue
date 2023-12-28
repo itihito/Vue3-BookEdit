@@ -8,10 +8,10 @@ type Props = {
 };
 
 const route = useRoute();
-const bookId = Number(route.params.id);
+const seq = Number(route.params.seq);
 
 const props = defineProps<Props>();
-const book = ref(props.books[bookId]);
+const book = ref(props.books[seq - 1]);
 
 const readDate = ref();
 const date = ref(
@@ -22,7 +22,7 @@ const emit = defineEmits(["update-book-info"]);
 
 const updateBookInfo = () => {
   emit("update-book-info", {
-    id: bookId,
+    seq: seq,
     readDate: date.value,
     memo: book.value.memo,
   });
@@ -67,7 +67,7 @@ const updateDate = () => {
                   color="primary"
                   elevation="24"
                   v-model="readDate"
-                  @update:modelValue="updateDate()"
+                  @update:modelValue="updateDate"
                 ></v-date-picker>
               </v-menu>
               感想：<v-textarea class="mx-2" v-model="book.memo"></v-textarea>

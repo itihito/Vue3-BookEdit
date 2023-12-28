@@ -16,7 +16,7 @@ defineProps<Props>();
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" sm="6" v-for="book in books" :key="book.id">
+      <v-col cols="12" sm="6" v-for="book in books" :key="book.seq">
         <v-card>
           <v-row>
             <v-col cols="4">
@@ -32,7 +32,7 @@ defineProps<Props>();
                 class="bg-indigo"
                 elevation="8"
                 icon="mdi-pencil"
-                :to="`/edit/${book.id}`"
+                :to="`/edit/${book.seq}`"
               />
             </v-card-actions>
           </v-col>

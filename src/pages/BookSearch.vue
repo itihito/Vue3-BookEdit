@@ -3,8 +3,19 @@ import { ref } from "vue";
 import axios from "axios";
 import { Book } from "../App.vue";
 
+export type SearchResultBook = {
+  bookId: string;
+  title: string;
+  description: string;
+  image: string;
+  readDate: string;
+  isAdded: boolean;
+};
+
 const keyword = ref<string>("");
-const searchResults = ref<Book[]>([]);
+const searchResults = ref<SearchResultBook[]>([]);
+const { books } = defineProps(["books"]);
+
 const search = async (keyword: string) => {
   searchResults.value = [];
   const baseUrl = "https://www.googleapis.com/books/v1/volumes?";
@@ -12,21 +23,27 @@ const search = async (keyword: string) => {
     q: `intitle:${keyword}`,
     maxResults: "40",
   };
-  const queryParams = new URLSearchParams(params);
 
+  const queryParams = new URLSearchParams(params);
   const response = await axios.get(baseUrl + queryParams);
 
   for (const book of response.data.items) {
     const title = book.volumeInfo.title;
     const img = book.volumeInfo.imageLinks;
     const description = book.volumeInfo.description;
+    const bookId = book.id;
+
+    const isAdded: boolean = books.some(
+      (existingBook: Book) => existingBook.bookId === bookId
+    );
+
     searchResults.value.push({
-      id: null,
+      bookId: bookId,
       title: title ? title : "",
       description: description ? description.slice(0, 40) : "",
       image: img ? img.thumbnail : "",
       readDate: "",
-      memo: "",
+      isAdded: isAdded,
     });
   }
 };
@@ -82,6 +99,7 @@ const addBookList = (index: number) => {
                   elevation="8"
                   color="white"
                   icon="mdi-plus"
+                  :disabled="book.isAdded"
                   v-on:click="addBookList(index)"
                 />
               </v-card-actions>
