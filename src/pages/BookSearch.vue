@@ -40,7 +40,7 @@ const addBookList = (index: number) => {
 <template>
   <div>
     <!-- 検索インプット要素 -->
-    <v-row>
+    <v-row class="d-flex justify-center">
       <v-col cols="6">
         <v-text-field
           label="本のタイトルを検索"
@@ -50,11 +50,11 @@ const addBookList = (index: number) => {
     </v-row>
 
     <!-- 検索＆一覧に戻るボタン -->
-    <v-row>
-      <v-col cols="3">
+    <v-row class="d-flex justify-center">
+      <v-col cols="3" class="d-flex justify-center">
         <v-btn color="primary" @click="search(keyword)">検索する</v-btn>
       </v-col>
-      <v-col>
+      <v-col cols="3" class="d-flex justify-center">
         <v-btn color="secondary" to="/"> 一覧に戻る </v-btn>
       </v-col>
     </v-row>
