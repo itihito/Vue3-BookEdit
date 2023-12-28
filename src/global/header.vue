@@ -10,7 +10,7 @@ const deleteLocalStorage = () => {
     <v-app-bar app color="primary" dark>
       <v-spacer></v-spacer>
       <v-btn class="bg-error" color="" v-on:click="deleteLocalStorage"
-        >削除する</v-btn
+        >すべて削除する</v-btn
       >
     </v-app-bar>
   </div>

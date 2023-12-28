@@ -85,12 +85,13 @@ const goToEditPage = (id: number) => {
   router.push(`edit/${id}`);
 };
 
-const deleteLocalStorage = () => {
+const deleteLocalStorage = async () => {
   const isDeleted = "localStorageのデータを削除してもよろしいでしょうか";
   if (confirm(isDeleted)) {
     localStorage.setItem(STORAGE_KEY, "");
     localStorage.removeItem(STORAGE_KEY);
     books.value = [];
+    await router.push("/");
     window.location.reload();
   }
 };
