@@ -6,6 +6,10 @@ type Props = {
 };
 
 defineProps<Props>();
+const emit = defineEmits(["deleteBookList"]);
+const deleteBook = (seq: number) => {
+  emit("deleteBookList", seq);
+};
 </script>
 
 <template>
@@ -33,6 +37,12 @@ defineProps<Props>();
                 elevation="8"
                 icon="mdi-pencil"
                 :to="`/edit/${book.seq}`"
+              />
+              <v-btn
+                class="bg-error ml-4"
+                elevation="8"
+                icon="mdi-delete"
+                v-on:click="deleteBook(book.seq)"
               />
             </v-card-actions>
           </v-col>

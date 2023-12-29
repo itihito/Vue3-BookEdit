@@ -41,9 +41,8 @@ const addBook = (book: SearchResultBook) => {
   goToEditPage(pageId);
 };
 
-// TODO 削除機能の追加
-const removeBook = (x: number) => {
-  books.value.splice(x, 1);
+const removeBook = (seq: number) => {
+  books.value = books.value.filter((book: Book) => book.seq !== seq);
   saveBooks();
 };
 
@@ -100,6 +99,7 @@ const deleteLocalStorage = async () => {
           :books="books"
           @add-book-list="addBook"
           @update-book-info="updateBookInfo"
+          @delete-Book-List="removeBook"
         />
       </v-container>
     </v-main>
