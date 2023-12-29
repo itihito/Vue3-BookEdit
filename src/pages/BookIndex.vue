@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Book } from "../App.vue";
+import { Book } from "../Types";
 
 type Props = {
   books: Book[];

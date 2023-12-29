@@ -1,16 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import axios from "axios";
-import { Book } from "../App.vue";
-
-export type SearchResultBook = {
-  bookId: string;
-  title: string;
-  description: string;
-  image: string;
-  readDate: string;
-  isAdded: boolean;
-};
+import { Book, SearchResultBook } from "../Types";
 
 const keyword = ref<string>("");
 const searchResults = ref<SearchResultBook[]>([]);

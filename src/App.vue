@@ -3,17 +3,7 @@ import Footer from "./global/footer.vue";
 import Header from "./global/header.vue";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { SearchResultBook } from "./pages/BookSearch.vue";
-
-export type Book = {
-  seq: number | null;
-  bookId: string;
-  title: string;
-  description: string;
-  image: string;
-  readDate: string;
-  memo: string;
-};
+import { Book, SearchResultBook, UpdateBookInfo } from "./Types";
 
 const router = useRouter();
 const books = ref<Book[]>([]);
@@ -30,7 +20,6 @@ onMounted(() => {
   }
 });
 
-// TODO 重複登録できないようにする
 const addBook = (book: SearchResultBook) => {
   const currentSeq =
     books.value.length > 0
@@ -63,8 +52,8 @@ const saveBooks = () => {
   localStorage.setItem(STORAGE_KEY, parsed);
 };
 
-const updateBookInfo = (book: Book) => {
-  const seq = book.seq!;
+const updateBookInfo = (book: UpdateBookInfo) => {
+  const seq = book.seq;
 
   const updateInfo = {
     seq: seq,
