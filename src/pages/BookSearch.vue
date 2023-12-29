@@ -71,7 +71,10 @@ const addBookList = (index: number) => {
     <v-row>
       <v-col
         cols="12"
+        xl="3"
+        lg="4"
         md="6"
+        sm="6"
         v-for="(book, index) in searchResults"
         :key="index"
       >

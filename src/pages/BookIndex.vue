@@ -20,7 +20,15 @@ const deleteBook = (seq: number) => {
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" sm="6" v-for="book in books" :key="book.seq">
+      <v-col
+        cols="12"
+        xl="3"
+        lg="4"
+        md="6"
+        sm="6"
+        v-for="book in books"
+        :key="book.seq"
+      >
         <v-card>
           <v-row>
             <v-col cols="4">
