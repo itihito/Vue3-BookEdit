@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
+import { useRouter } from "vue-router";
 
 const emit = defineEmits(["delete-local-storage"]);
 const deleteLocalStorage = () => {
   emit("delete-local-storage");
 };
+const router = useRouter();
 
 const logout = () => {
   signOut(auth)
@@ -18,6 +20,7 @@ const logout = () => {
       console.log("ログアウト失敗");
     });
   localStorage.clear();
+  router.push("/login");
 };
 </script>
 
