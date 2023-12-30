@@ -23,6 +23,7 @@ const logout = () => {
 <template>
   <div>
     <v-app-bar app color="primary" dark>
+      <v-text class="text-h5">読書管理アプリ</v-text>
       <v-spacer></v-spacer>
       <v-btn class="bg-error" color="" v-on:click="deleteLocalStorage"
         >すべて削除する</v-btn
