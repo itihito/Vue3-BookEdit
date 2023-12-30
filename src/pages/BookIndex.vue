@@ -27,7 +27,7 @@ const auth = computed(() => {
         <v-btn color="primary" to="/login" v-else>ログインする</v-btn>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-if="auth.uid">
       <v-col
         cols="12"
         xl="3"
