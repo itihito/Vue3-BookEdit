@@ -3,7 +3,7 @@ import Footer from "./global/footer.vue";
 import Header from "./global/header.vue";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { Book, SearchResultBook, UpdateBookInfo } from "./Types";
+import { Book, SearchResultBook } from "./Types";
 
 const router = useRouter();
 const books = ref<Book[]>([]);
@@ -70,7 +70,7 @@ const updateBookInfo = (book: Book) => {
   router.push("/");
 };
 
-const goToEditPage = (id: number) => {
+const goToEditPage = (id: string) => {
   router.push(`edit/${id}`);
 };
 
