@@ -52,7 +52,7 @@ const auth = computed(() => {
                 class="bg-indigo"
                 elevation="8"
                 icon="mdi-pencil"
-                :to="`/edit/${book.seq}`"
+                :to="`/edit/${book.bookId}`"
               />
               <v-btn
                 class="bg-error ml-4"

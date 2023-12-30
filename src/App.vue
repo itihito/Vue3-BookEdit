@@ -37,7 +37,7 @@ const addBook = (book: SearchResultBook) => {
   });
   newBook.value = "";
   saveBooks();
-  const pageId = books.value.slice(-1)[0].seq as number;
+  const pageId = books.value.slice(-1)[0].bookId;
   goToEditPage(pageId);
 };
 
@@ -51,20 +51,21 @@ const saveBooks = () => {
   localStorage.setItem(STORAGE_KEY, parsed);
 };
 
-const updateBookInfo = (book: UpdateBookInfo) => {
-  const seq = book.seq;
-
+const updateBookInfo = (book: Book) => {
+  const startIndex = books.value.findIndex(
+    (book) => book.bookId === book.bookId
+  );
   const updateInfo = {
-    seq: seq,
-    bookId: books.value[seq - 1].bookId,
+    seq: book.seq,
+    bookId: book.bookId,
+    title: book.title,
+    description: book.description,
+    image: book.image,
     readDate: book.readDate,
     memo: book.memo,
-    title: books.value[seq - 1].title,
-    image: books.value[seq - 1].image,
-    description: books.value[seq - 1].description,
   };
 
-  books.value.splice(seq - 1, 1, updateInfo);
+  books.value.splice(startIndex, 1, updateInfo);
   saveBooks();
   router.push("/");
 };

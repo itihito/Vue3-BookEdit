@@ -8,12 +8,6 @@ type Book = {
   memo: string;
 };
 
-type UpdateBookInfo = {
-  seq: number;
-  readDate: string;
-  memo: string;
-};
-
 type SearchResultBook = {
   bookId: string;
   title: string;
@@ -24,4 +18,4 @@ type SearchResultBook = {
 };
 
 // まとめてエクスポート
-export type { Book, UpdateBookInfo, SearchResultBook };
+export type { Book, SearchResultBook };

@@ -8,10 +8,10 @@ type Props = {
 };
 
 const route = useRoute();
-const seq = Number(route.params.seq);
+const bookId = route.params.seq as string;
 
 const props = defineProps<Props>();
-const book = ref(props.books[seq - 1]);
+const book = ref(props.books.find((book) => book.bookId === bookId)!);
 
 const readDate = ref();
 const date = ref(
@@ -22,7 +22,11 @@ const emit = defineEmits(["update-book-info"]);
 
 const updateBookInfo = () => {
   emit("update-book-info", {
-    seq: seq,
+    seq: book.value.seq,
+    bookId: bookId,
+    title: book.value.title,
+    description: book.value.description,
+    image: book.value.image,
     readDate: date.value,
     memo: book.value.memo,
   });
