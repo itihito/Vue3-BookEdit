@@ -9,11 +9,13 @@ import { auth } from "../firebase/firebase.ts";
 import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import { computed } from "vue";
+import { useRouter } from "vue-router";
 
 const email = ref<string>("");
 const password = ref<string>("");
 const currentUser = ref();
 const store = useStore();
+const router = useRouter();
 const loginUserInfo = computed(() => {
   return store.state.auth.user;
 });
@@ -31,6 +33,7 @@ const signIn = () => {
         name: user.email,
         uid: user.uid,
       });
+      router.push("/");
     })
     .catch((error) => {
       // 失敗時処理

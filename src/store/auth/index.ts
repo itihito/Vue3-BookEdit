@@ -30,7 +30,7 @@ const mutations = {
 };
 
 const actions = {
-  SetUserStateAction({ commit: Commit }, payload: User) {
+  SetUserStateAction({ commit }, payload: User) {
     commit("SetUserState", payload);
   },
 };
