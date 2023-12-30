@@ -9,18 +9,28 @@ interface State {
   user: User;
 }
 
-const state: State = {
-  user: { name: "taro", uid: "" },
+const initUser = (): User => {
+  const user = localStorage.getItem("user");
+  if (user) {
+    const parsedUser = JSON.parse(user);
+    return parsedUser;
+  }
+  return { name: "", uid: "" };
 };
 
-const mutations: MutationTree<State> = {
+const state: State = {
+  user: initUser(),
+};
+
+const mutations = {
   SetUserState(state: State, payload: User) {
     state.user = payload;
+    localStorage.setItem("user", JSON.stringify(payload));
   },
 };
 
-const actions: ActionTree<State, any> = {
-  SetUserStateAction({ commit }, payload: any) {
+const actions = {
+  SetUserStateAction({ commit: Commit }, payload: User) {
     commit("SetUserState", payload);
   },
 };
