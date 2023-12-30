@@ -17,6 +17,7 @@ const logout = () => {
       // ログアウト失敗
       console.log("ログアウト失敗");
     });
+  localStorage.clear();
 };
 </script>
 
