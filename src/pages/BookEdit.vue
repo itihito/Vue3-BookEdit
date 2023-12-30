@@ -8,7 +8,7 @@ type Props = {
 };
 
 const route = useRoute();
-const bookId = route.params.seq as string;
+const bookId = route.params.bookId as string;
 
 const props = defineProps<Props>();
 const book = ref(props.books.find((book) => book.bookId === bookId)!);

@@ -21,7 +21,7 @@ const routes: Array<RouteRecordRaw> = [
     component: BookSearch,
   },
   {
-    path: "/edit/:seq",
+    path: "/edit/:bookId",
     name: "BookEdit",
     component: BookEdit,
   },
