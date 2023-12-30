@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useStore } from "vuex";
 import { Book } from "../Types";
+import { computed } from "vue";
 
 type Props = {
   books: Book[];
@@ -10,13 +12,19 @@ const emit = defineEmits(["deleteBookList"]);
 const deleteBook = (seq: number) => {
   emit("deleteBookList", seq);
 };
+
+const store = useStore();
+const auth = computed(() => {
+  return store.state.auth.user;
+});
 </script>
 
 <template>
   <div>
     <v-row>
       <v-col cols="6">
-        <v-btn color="primary" to="/search">検索する</v-btn>
+        <v-btn color="primary" to="/search" v-if="auth.uid">検索する</v-btn>
+        <v-btn color="primary" to="/login" v-else>ログインする</v-btn>
       </v-col>
     </v-row>
     <v-row>
