@@ -26,7 +26,7 @@ const deleteLocalStorage = () => {
 <template>
   <div>
     <v-row>
-      <v-col cols="12" class="mt-2 d-flex justify-space-between">
+      <v-col cols="12" class="mx-auto mt-2 d-flex justify-space-between">
         <v-btn color="primary" to="/search" v-if="auth.uid">検索する</v-btn>
         <v-btn color="primary" to="/login" v-else>ログインする</v-btn>
         <v-btn class="bg-error ml-4" color="" v-on:click="deleteLocalStorage"
