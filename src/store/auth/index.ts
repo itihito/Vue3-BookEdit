@@ -1,4 +1,4 @@
-import type { MutationTree, ActionTree } from "vuex";
+import type { Commit } from "vuex";
 
 type User = {
   name: string;
@@ -14,8 +14,9 @@ const initUser = (): User => {
   if (user) {
     const parsedUser = JSON.parse(user);
     return parsedUser;
+  } else {
+    return { name: "", uid: "" };
   }
-  return { name: "", uid: "" };
 };
 
 const state: State = {
@@ -30,7 +31,7 @@ const mutations = {
 };
 
 const actions = {
-  SetUserStateAction({ commit }, payload: User) {
+  SetUserStateAction({ commit }: { commit: Commit }, payload: User) {
     commit("SetUserState", payload);
   },
 };
