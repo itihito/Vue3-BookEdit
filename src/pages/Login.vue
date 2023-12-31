@@ -90,7 +90,6 @@ onMounted(() => {
       </v-sheet>
     </v-container>
   </v-sheet>
-  {{ loginUserInfo }}
   <br />
 </template>
 
