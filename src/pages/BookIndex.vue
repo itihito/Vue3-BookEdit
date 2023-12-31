@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useStore } from "vuex";
-import { Book } from "../Types";
+import { Book } from "../typings/Types";
 import { computed } from "vue";
 
 type Props = {

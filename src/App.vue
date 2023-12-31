@@ -4,7 +4,7 @@ import Header from "./global/header.vue";
 import { onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { Book, SearchResultBook } from "./Types";
+import { Book, SearchResultBook } from "./typings/Types";
 import { computed } from "vue";
 
 const router = useRouter();

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute } from "vue-router";
-import { Book } from "../Types";
+import { Book } from "../typings/Types";
 
 type Props = {
   books: Book[];
