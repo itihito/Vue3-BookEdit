@@ -20,7 +20,7 @@ const logout = () => {
       // ログアウト失敗
       console.log("ログアウト失敗");
     });
-  localStorage.clear();
+  localStorage.removeItem("user");
   router.push("/login");
   location.reload();
 };
