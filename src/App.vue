@@ -2,13 +2,16 @@
 import Footer from "./global/footer.vue";
 import Header from "./global/header.vue";
 import { onMounted, ref } from "vue";
+import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { Book, SearchResultBook } from "./Types";
+import { computed } from "vue";
 
 const router = useRouter();
 const books = ref<Book[]>([]);
 const newBook = ref<string>("");
 const STORAGE_KEY = "books";
+const store = useStore();
 
 onMounted(() => {
   if (localStorage.getItem(STORAGE_KEY)) {
@@ -85,6 +88,10 @@ const deleteLocalStorage = async () => {
   }
 };
 
+const isAuth = computed(() => {
+  return store.state.auth.user.uid ? true : false;
+});
+
 // TODO ソート機能を追加する？
 </script>
 
@@ -93,10 +100,14 @@ const deleteLocalStorage = async () => {
   <!-- <LocalStorage />
   <LocalStorage2 /> -->
   <v-app>
-    <Header @delete-local-storage="deleteLocalStorage"></Header>
+    <Header
+      @delete-local-storage="deleteLocalStorage"
+      :isAuth="isAuth"
+    ></Header>
     <v-main>
       <v-container>
         <router-view
+          :isAuth="isAuth"
           :books="books"
           @add-book-list="addBook"
           @update-book-info="updateBookInfo"

@@ -8,6 +8,7 @@ const deleteLocalStorage = () => {
   emit("delete-local-storage");
 };
 const router = useRouter();
+const { isAuth } = defineProps(["isAuth"]);
 
 const logout = () => {
   signOut(auth)
@@ -21,6 +22,7 @@ const logout = () => {
     });
   localStorage.clear();
   router.push("/login");
+  location.reload();
 };
 </script>
 
@@ -29,10 +31,19 @@ const logout = () => {
     <v-app-bar app color="primary" dark>
       <v-text class="text-h5">読書管理アプリ</v-text>
       <v-spacer></v-spacer>
-      <v-btn class="bg-error" color="" v-on:click="deleteLocalStorage"
-        >すべて削除する</v-btn
-      >
-      <v-btn class="bg-error ml-4" @click="logout">ログアウト</v-btn>
+      <v-sheet color="primary" v-if="isAuth">
+        <v-btn class="bg-error" color="" v-on:click="deleteLocalStorage"
+          >すべて削除する</v-btn
+        >
+        <v-btn class="bg-error ml-4 mr-2" @click="logout"
+          >ログアウト<v-icon class="ml-2">mdi-logout</v-icon>
+        </v-btn>
+      </v-sheet>
+      <v-sheet color="primary" v-else="isAuth">
+        <v-btn class="bg-white" color="indigo" href="/login"
+          >ログイン<v-icon class="ml-2">mdi-login</v-icon>
+        </v-btn>
+      </v-sheet>
     </v-app-bar>
   </div>
 </template>
