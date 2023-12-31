@@ -6,19 +6,16 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const { isAuth } = defineProps(["isAuth"]);
 
-const logout = () => {
-  signOut(auth)
-    .then(() => {
-      // ログアウト成功
-      console.log("ログアウト成功");
-    })
-    .catch(() => {
-      // ログアウト失敗
-      console.log("ログアウト失敗");
-    });
-  localStorage.removeItem("user");
-  router.push("/login");
-  location.reload();
+const logout = async () => {
+  try {
+    await signOut(auth);
+    console.log("ログアウト成功");
+    localStorage.removeItem("user");
+    await router.push("/login");
+    location.reload();
+  } catch (error) {
+    console.log("ログアウト失敗");
+  }
 };
 </script>
 
