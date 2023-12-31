@@ -3,10 +3,6 @@ import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { useRouter } from "vue-router";
 
-const emit = defineEmits(["delete-local-storage"]);
-const deleteLocalStorage = () => {
-  emit("delete-local-storage");
-};
 const router = useRouter();
 const { isAuth } = defineProps(["isAuth"]);
 
@@ -32,9 +28,6 @@ const logout = () => {
       <v-text class="text-h5">読書管理アプリ</v-text>
       <v-spacer></v-spacer>
       <v-sheet color="primary" v-if="isAuth">
-        <v-btn class="bg-error" color="" v-on:click="deleteLocalStorage"
-          >すべて削除する</v-btn
-        >
         <v-btn class="bg-error ml-4 mr-2" @click="logout"
           >ログアウト<v-icon class="ml-2">mdi-logout</v-icon>
         </v-btn>

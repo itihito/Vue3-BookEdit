@@ -100,10 +100,7 @@ const isAuth = computed(() => {
   <!-- <LocalStorage />
   <LocalStorage2 /> -->
   <v-app>
-    <Header
-      @delete-local-storage="deleteLocalStorage"
-      :isAuth="isAuth"
-    ></Header>
+    <Header :isAuth="isAuth"></Header>
     <v-main>
       <v-container>
         <router-view
@@ -112,6 +109,7 @@ const isAuth = computed(() => {
           @add-book-list="addBook"
           @update-book-info="updateBookInfo"
           @delete-Book-List="removeBook"
+          @delete-local-storage="deleteLocalStorage"
         />
       </v-container>
     </v-main>

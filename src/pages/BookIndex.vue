@@ -8,7 +8,7 @@ type Props = {
 };
 
 defineProps<Props>();
-const emit = defineEmits(["deleteBookList"]);
+const emit = defineEmits(["deleteBookList", "delete-local-storage"]);
 const deleteBook = (seq: number) => {
   emit("deleteBookList", seq);
 };
@@ -17,14 +17,21 @@ const store = useStore();
 const auth = computed(() => {
   return store.state.auth.user;
 });
+
+const deleteLocalStorage = () => {
+  emit("delete-local-storage");
+};
 </script>
 
 <template>
   <div>
     <v-row>
-      <v-col cols="6">
+      <v-col cols="12" class="mt-2 d-flex justify-space-between">
         <v-btn color="primary" to="/search" v-if="auth.uid">検索する</v-btn>
         <v-btn color="primary" to="/login" v-else>ログインする</v-btn>
+        <v-btn class="bg-error ml-4" color="" v-on:click="deleteLocalStorage"
+          >本をすべて削除する</v-btn
+        >
       </v-col>
     </v-row>
     <v-row v-if="auth.uid">
