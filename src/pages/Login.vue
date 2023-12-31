@@ -13,7 +13,6 @@ import { useRouter } from "vue-router";
 
 const email = ref<string>("");
 const password = ref<string>("");
-const currentUser = ref();
 const store = useStore();
 const router = useRouter();
 const loginUserInfo = computed(() => {
@@ -62,11 +61,9 @@ const createAccount = () => {
 onMounted(() => {
   // ログインしているユーザーを取得する
   onAuthStateChanged(auth, (user) => {
-    if (user != null) {
-      currentUser.value = user;
-      console.log("user", user);
-    } else {
-      currentUser.value = null;
+    if (user) {
+      // ログイン済みの場合はインデックス画面に遷移させる
+      router.push("/");
     }
   });
 });
