@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import axios from "axios";
-import { Book, SearchResultBook } from "../Types";
+import { Book, SearchResultBook } from "../typings/Types";
 
 const keyword = ref<string>("");
 const searchResults = ref<SearchResultBook[]>([]);
