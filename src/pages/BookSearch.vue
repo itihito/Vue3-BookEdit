@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import axiosClient from "../api/axiosClieant";
 import { Book, SearchResultBook } from "../typings/Types";
+import router from "../router";
 
 const keyword = ref<string>("");
 const searchResults = ref<SearchResultBook[]>([]);
@@ -30,15 +31,15 @@ const search = async (keyword: string) => {
       title: title ? title : "",
       description: description ? description.slice(0, 40) : "",
       image: img ? img.thumbnail : "",
-      readDate: "",
       isAdded: isAdded,
     });
   }
 };
 
 const emit = defineEmits(["add-book-list"]);
-const addBookList = (index: number) => {
-  emit("add-book-list", searchResults.value[index]);
+
+const goToRegisterPage = (id: string) => {
+  router.push(`register/${id}`);
 };
 </script>
 
@@ -91,7 +92,7 @@ const addBookList = (index: number) => {
                   color="white"
                   icon="mdi-plus"
                   :disabled="book.isAdded"
-                  v-on:click="addBookList(index)"
+                  v-on:click="goToRegisterPage(book.bookId)"
                 />
               </v-card-actions>
             </v-col>

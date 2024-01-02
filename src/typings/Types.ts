@@ -13,7 +13,6 @@ type SearchResultBook = {
   title: string;
   description: string;
   image: string;
-  readDate: string;
   isAdded: boolean;
 };
 

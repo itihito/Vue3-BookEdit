@@ -2,33 +2,42 @@
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 import { Book } from "../typings/Types";
-
-type Props = {
-  books: Book[];
-};
+import axiosClient from "../api/axiosClieant";
+import { onMounted } from "vue";
 
 const route = useRoute();
 const bookId = route.params.bookId as string;
-const { books } = defineProps<Props>();
-const book = ref(books.find((book) => book.bookId === bookId)!);
-
 const readDate = ref();
-const date = ref(
-  book.value.readDate ? book.value.readDate : formatDate(new Date())
-);
+const date = ref(formatDate(new Date()));
 
-const emit = defineEmits(["update-book-info"]);
+let newBook = ref({} as Book);
+const fetchData = async () => {
+  try {
+    const res = await axiosClient.get(bookId);
+    const title = res.data.volumeInfo.title;
+    const img = res.data.volumeInfo.imageLinks;
+    const description = res.data.volumeInfo.description;
+    newBook.value = {
+      seq: 1,
+      bookId: bookId,
+      title: title ? title : "",
+      description: description ? description.slice(0, 40) : "",
+      image: img ? img.thumbnail : "",
+      readDate: date.value,
+      memo: "",
+    };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
 
-const updateBookInfo = () => {
-  emit("update-book-info", {
-    seq: book.value.seq,
-    bookId: bookId,
-    title: book.value.title,
-    description: book.value.description,
-    image: book.value.image,
-    readDate: date.value,
-    memo: book.value.memo,
-  });
+onMounted(async () => {
+  await fetchData();
+});
+
+const emit = defineEmits(["add-book-list"]);
+const addBookList = () => {
+  emit("add-book-list", newBook.value);
 };
 
 function formatDate(inputDate: Date): string {
@@ -53,10 +62,10 @@ const updateDate = () => {
         <v-card>
           <v-row>
             <v-col cols="4">
-              <v-img :src="book.image"></v-img>
+              <v-img :src="newBook.image"></v-img>
             </v-col>
             <v-col cols="8">
-              <v-card-title> タイトル：{{ book.title }} </v-card-title>
+              <v-card-title> タイトル：{{ newBook.title }} </v-card-title>
               読んだ日：
               <v-menu>
                 <template v-slot:activator="{ props }">
@@ -73,10 +82,13 @@ const updateDate = () => {
                   @update:modelValue="updateDate"
                 ></v-date-picker>
               </v-menu>
-              感想：<v-textarea class="mx-2" v-model="book.memo"></v-textarea>
+              感想：<v-textarea
+                class="mx-2"
+                v-model="newBook.memo"
+              ></v-textarea>
               <v-card-actions>
                 <v-btn class="bg-secondary" to="/">一覧に戻る</v-btn>
-                <v-btn class="bg-info" @click="updateBookInfo">更新する</v-btn>
+                <v-btn class="bg-info" @click="addBookList">登録する</v-btn>
               </v-card-actions>
             </v-col>
           </v-row>

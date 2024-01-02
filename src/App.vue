@@ -4,7 +4,7 @@ import Header from "./global/header.vue";
 import { onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { Book, SearchResultBook } from "./typings/Types";
+import { Book } from "./typings/Types";
 import { computed } from "vue";
 
 const router = useRouter();
@@ -23,7 +23,7 @@ onMounted(() => {
   }
 });
 
-const addBook = (book: SearchResultBook) => {
+const addBook = (book: Book) => {
   const currentSeq =
     books.value.length > 0
       ? Math.max(...books.value.map((b) => b.seq || 0)) + 1

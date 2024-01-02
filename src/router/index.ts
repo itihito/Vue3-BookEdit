@@ -4,6 +4,7 @@ import BookSearch from "../pages/BookSearch.vue";
 import BookEdit from "../pages/BookEdit.vue";
 import Login from "../pages/Login.vue";
 import authStore from "../store/auth/index";
+import BookRegister from "../pages/BookRegister.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -28,6 +29,14 @@ const routes: Array<RouteRecordRaw> = [
     path: "/edit/:bookId",
     name: "BookEdit",
     component: BookEdit,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/register/:bookId",
+    name: "BookRegister",
+    component: BookRegister,
     meta: {
       requiresAuth: true,
     },
