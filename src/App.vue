@@ -6,24 +6,22 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { Book } from "./typings/Types";
 import { computed } from "vue";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, getDocs, collection, where, query } from "firebase/firestore";
 import { db } from "./firebase/firebase.ts";
 import auth from "./store/auth";
 
 const router = useRouter();
 const books = ref<Book[]>([]);
 const newBook = ref<string>("");
-const STORAGE_KEY = "books";
 const store = useStore();
 
-onMounted(() => {
-  if (localStorage.getItem(STORAGE_KEY)) {
-    try {
-      books.value = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
-    } catch (e) {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }
+onMounted(async () => {
+  const q = query(
+    collection(db, "books"),
+    where("uid", "==", auth.state.user.uid)
+  );
+  const booksData = await getDocs(q);
+  books.value = booksData.docs.map((doc) => doc.data()) as Book[];
 });
 
 const addBook = (book: Book) => {
