@@ -6,7 +6,16 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { Book } from "./typings/Types";
 import { computed } from "vue";
-import { addDoc, getDocs, collection, where, query } from "firebase/firestore";
+import {
+  addDoc,
+  getDocs,
+  updateDoc,
+  collection,
+  where,
+  query,
+  doc,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "./firebase/firebase.ts";
 import auth from "./store/auth";
 
@@ -56,10 +65,10 @@ const removeBook = (seq: number) => {
 
 const saveBooks = () => {
   const parsed = JSON.stringify(books.value);
-  localStorage.setItem(STORAGE_KEY, parsed);
+  // localStorage.setItem(STORAGE_KEY, parsed);
 };
 
-const updateBookInfo = (book: Book) => {
+const updateBookInfo = async (book: Book) => {
   const startIndex = books.value.findIndex(
     (book) => book.bookId === book.bookId
   );
@@ -75,6 +84,8 @@ const updateBookInfo = (book: Book) => {
     memo: book.memo,
   };
 
+  // const res = await updateDoc();
+
   books.value.splice(startIndex, 1, updateBook);
   saveBooks();
   router.push("/");
@@ -87,8 +98,8 @@ const goToEditPage = (id: string) => {
 const deleteLocalStorage = async () => {
   const isDeleted = "localStorageのデータを削除してもよろしいでしょうか";
   if (confirm(isDeleted)) {
-    localStorage.setItem(STORAGE_KEY, "");
-    localStorage.removeItem(STORAGE_KEY);
+    // localStorage.setItem(STORAGE_KEY, "");
+    // localStorage.removeItem(STORAGE_KEY);
     books.value = [];
     await router.push("/");
     window.location.reload();
@@ -99,9 +110,10 @@ const isAuth = computed(() => {
   return store.state.auth.user.uid ? true : false;
 });
 
+const FIRESTORE_PATH = "books";
 const addBookToFirestore = async (book: Book) => {
-  const res = await addDoc(collection(db, "books"), book);
-  console.log("res", res);
+  const recordId = `${book.uid}-${book.seq}`;
+  await setDoc(doc(db, FIRESTORE_PATH, recordId), book);
 };
 
 // TODO ソート機能を追加する？
