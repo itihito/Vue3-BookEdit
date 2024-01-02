@@ -1,10 +1,12 @@
 type Book = {
+  uid: string;
   seq: number;
   bookId: string;
   title: string;
   description: string;
   image: string;
-  readDate: string;
+  date: string;
+  dateTime: string;
   memo: string;
 };
 

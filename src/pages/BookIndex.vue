@@ -52,7 +52,7 @@ const deleteLocalStorage = () => {
           </v-row>
           <v-col cols="8">
             <v-card-title>{{ book.title }}</v-card-title>
-            読んだ日：{{ book.readDate }} 感想：{{ book.memo }}
+            読んだ日：{{ book.date }} 感想：{{ book.memo }}
             <v-spacer></v-spacer>
             <v-card-actions>
               <v-btn

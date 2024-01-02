@@ -6,6 +6,9 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { Book } from "./typings/Types";
 import { computed } from "vue";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "./firebase/firebase.ts";
+import auth from "./store/auth";
 
 const router = useRouter();
 const books = ref<Book[]>([]);
@@ -28,16 +31,20 @@ const addBook = (book: Book) => {
     books.value.length > 0
       ? Math.max(...books.value.map((b) => b.seq || 0)) + 1
       : 1;
-
-  books.value.push({
+  const addBook: Book = {
+    uid: auth.state.user.uid,
     seq: currentSeq,
     bookId: book.bookId,
     title: book.title,
     description: book.description,
     image: book.image,
-    readDate: "",
-    memo: "",
-  });
+    date: book.date,
+    dateTime: book.dateTime,
+    memo: book.memo,
+  };
+
+  books.value.push(addBook);
+  addBookToFirestore(addBook);
   newBook.value = "";
   saveBooks();
   const pageId = books.value.slice(-1)[0].bookId;
@@ -58,17 +65,19 @@ const updateBookInfo = (book: Book) => {
   const startIndex = books.value.findIndex(
     (book) => book.bookId === book.bookId
   );
-  const updateInfo = {
+  const updateBook: Book = {
+    uid: auth.state.user.uid,
     seq: book.seq,
     bookId: book.bookId,
     title: book.title,
     description: book.description,
     image: book.image,
-    readDate: book.readDate,
+    date: book.date,
+    dateTime: book.dateTime,
     memo: book.memo,
   };
 
-  books.value.splice(startIndex, 1, updateInfo);
+  books.value.splice(startIndex, 1, updateBook);
   saveBooks();
   router.push("/");
 };
@@ -91,6 +100,11 @@ const deleteLocalStorage = async () => {
 const isAuth = computed(() => {
   return store.state.auth.user.uid ? true : false;
 });
+
+const addBookToFirestore = async (book: Book) => {
+  const res = await addDoc(collection(db, "books"), book);
+  console.log("res", res);
+};
 
 // TODO ソート機能を追加する？
 </script>

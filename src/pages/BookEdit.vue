@@ -12,10 +12,8 @@ const bookId = route.params.bookId as string;
 const { books } = defineProps<Props>();
 const book = ref(books.find((book) => book.bookId === bookId)!);
 
-const readDate = ref();
-const date = ref(
-  book.value.readDate ? book.value.readDate : formatDate(new Date())
-);
+const inputDate = ref();
+const date = ref(book.value.date);
 
 const emit = defineEmits(["update-book-info"]);
 
@@ -26,7 +24,7 @@ const updateBookInfo = () => {
     title: book.value.title,
     description: book.value.description,
     image: book.value.image,
-    readDate: date.value,
+    date: date.value,
     memo: book.value.memo,
   });
 };
@@ -40,8 +38,7 @@ function formatDate(inputDate: Date): string {
 }
 
 const updateDate = () => {
-  date.value = readDate.value.toISOString().substring(0, 10);
-  const formattedDate = formatDate(readDate.value);
+  const formattedDate = formatDate(inputDate.value);
   date.value = formattedDate;
 };
 </script>
@@ -69,7 +66,7 @@ const updateDate = () => {
                 <v-date-picker
                   color="primary"
                   elevation="24"
-                  v-model="readDate"
+                  v-model="inputDate"
                   @update:modelValue="updateDate"
                 ></v-date-picker>
               </v-menu>

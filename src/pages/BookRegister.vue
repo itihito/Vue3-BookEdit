@@ -7,7 +7,7 @@ import { onMounted } from "vue";
 
 const route = useRoute();
 const bookId = route.params.bookId as string;
-const readDate = ref();
+const inputDate = ref();
 const date = ref(formatDate(new Date()));
 
 let newBook = ref({} as Book);
@@ -18,12 +18,14 @@ const fetchData = async () => {
     const img = res.data.volumeInfo.imageLinks;
     const description = res.data.volumeInfo.description;
     newBook.value = {
-      seq: 1,
+      uid: "", // 型定義エラー回避の為に仮定義
+      seq: -1, // 型定義エラー回避の為に仮定義
       bookId: bookId,
       title: title ? title : "",
       description: description ? description.slice(0, 40) : "",
       image: img ? img.thumbnail : "",
-      readDate: date.value,
+      date: date.value,
+      dateTime: new Date().toISOString(),
       memo: "",
     };
   } catch (error) {
@@ -37,7 +39,7 @@ onMounted(async () => {
 
 const emit = defineEmits(["add-book-list"]);
 const addBookList = () => {
-  emit("add-book-list", { ...newBook.value, readDate: date.value });
+  emit("add-book-list", { ...newBook.value, date: date.value });
 };
 
 function formatDate(inputDate: Date): string {
@@ -49,8 +51,7 @@ function formatDate(inputDate: Date): string {
 }
 
 const updateDate = () => {
-  date.value = readDate.value.toISOString().substring(0, 10);
-  const formattedDate = formatDate(readDate.value);
+  const formattedDate = formatDate(inputDate.value);
   date.value = formattedDate;
 };
 </script>
@@ -78,7 +79,7 @@ const updateDate = () => {
                 <v-date-picker
                   color="primary"
                   elevation="24"
-                  v-model="readDate"
+                  v-model="inputDate"
                   @update:modelValue="updateDate"
                 ></v-date-picker>
               </v-menu>
