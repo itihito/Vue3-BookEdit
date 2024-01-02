@@ -37,7 +37,7 @@ onMounted(async () => {
 
 const emit = defineEmits(["add-book-list"]);
 const addBookList = () => {
-  emit("add-book-list", newBook.value);
+  emit("add-book-list", { ...newBook.value, readDate: date.value });
 };
 
 function formatDate(inputDate: Date): string {
