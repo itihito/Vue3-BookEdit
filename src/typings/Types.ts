@@ -6,8 +6,9 @@ type Book = {
   description: string;
   image: string;
   date: string;
-  dateTime: string;
   memo: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 type SearchResultBook = {

@@ -46,26 +46,19 @@ const addBook = (book: Book) => {
     description: book.description,
     image: book.image,
     date: book.date,
-    dateTime: book.dateTime,
+    createdAt: book.createdAt,
+    updatedAt: book.updatedAt,
     memo: book.memo,
   };
 
-  books.value.push(addBook);
   addBookToFirestore(addBook);
+  books.value.push(addBook);
   newBook.value = "";
-  saveBooks();
-  const pageId = books.value.slice(-1)[0].bookId;
-  goToEditPage(pageId);
+  goToEditPage(addBook.bookId);
 };
 
 const removeBook = (seq: number) => {
   books.value = books.value.filter((book: Book) => book.seq !== seq);
-  saveBooks();
-};
-
-const saveBooks = () => {
-  const parsed = JSON.stringify(books.value);
-  // localStorage.setItem(STORAGE_KEY, parsed);
 };
 
 const updateBookInfo = async (book: Book) => {
@@ -80,14 +73,16 @@ const updateBookInfo = async (book: Book) => {
     description: book.description,
     image: book.image,
     date: book.date,
-    dateTime: book.dateTime,
+    createdAt: book.createdAt,
+    updatedAt: book.updatedAt,
     memo: book.memo,
   };
 
-  // const res = await updateDoc();
+  const recordId = `${updateBook.uid}-${updateBook.seq}`;
+  const bookDocRef = doc(db, FIRESTORE_PATH, recordId);
+  await updateDoc(bookDocRef, updateBook);
 
   books.value.splice(startIndex, 1, updateBook);
-  saveBooks();
   router.push("/");
 };
 

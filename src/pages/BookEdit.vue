@@ -26,6 +26,8 @@ const updateBookInfo = () => {
     image: book.value.image,
     date: date.value,
     memo: book.value.memo,
+    createdAt: book.value.createdAt,
+    updatedAt: new Date().toISOString(),
   });
 };
 

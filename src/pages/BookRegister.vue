@@ -25,8 +25,9 @@ const fetchData = async () => {
       description: description ? description.slice(0, 40) : "",
       image: img ? img.thumbnail : "",
       date: date.value,
-      dateTime: new Date().toISOString(),
       memo: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
   } catch (error) {
     console.error("Error fetching data:", error);
