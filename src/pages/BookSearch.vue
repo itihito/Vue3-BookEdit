@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import axios from "axios";
+import axiosClient from "../api/axiosClieant";
 import { Book, SearchResultBook } from "../typings/Types";
 
 const keyword = ref<string>("");
@@ -9,14 +9,11 @@ const { books } = defineProps(["books"]);
 
 const search = async (keyword: string) => {
   searchResults.value = [];
-  const baseUrl = "https://www.googleapis.com/books/v1/volumes?";
   const params = {
     q: `intitle:${keyword}`,
     maxResults: "40",
   };
-
-  const queryParams = new URLSearchParams(params);
-  const response = await axios.get(baseUrl + queryParams);
+  const response = await axiosClient.get("", { params });
 
   for (const book of response.data.items) {
     const title = book.volumeInfo.title;
