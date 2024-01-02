@@ -15,6 +15,7 @@ import {
   query,
   doc,
   setDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "./firebase/firebase.ts";
 import auth from "./store/auth";
@@ -23,6 +24,7 @@ const router = useRouter();
 const books = ref<Book[]>([]);
 const newBook = ref<string>("");
 const store = useStore();
+const FIRESTORE_PATH = "books";
 
 onMounted(async () => {
   const q = query(
@@ -33,7 +35,8 @@ onMounted(async () => {
   books.value = booksData.docs.map((doc) => doc.data()) as Book[];
 });
 
-const addBook = (book: Book) => {
+// 本を追加
+const addBook = async (book: Book) => {
   const currentSeq =
     books.value.length > 0
       ? Math.max(...books.value.map((b) => b.seq || 0)) + 1
@@ -51,16 +54,15 @@ const addBook = (book: Book) => {
     memo: book.memo,
   };
 
-  addBookToFirestore(addBook);
+  const recordId = `${book.uid}-${book.seq}`;
+  await setDoc(doc(db, FIRESTORE_PATH, recordId), book);
+
   books.value.push(addBook);
   newBook.value = "";
   goToEditPage(addBook.bookId);
 };
 
-const removeBook = (seq: number) => {
-  books.value = books.value.filter((book: Book) => book.seq !== seq);
-};
-
+// 本を更新
 const updateBookInfo = async (book: Book) => {
   const startIndex = books.value.findIndex(
     (book) => book.bookId === book.bookId
@@ -86,10 +88,14 @@ const updateBookInfo = async (book: Book) => {
   router.push("/");
 };
 
-const goToEditPage = (id: string) => {
-  router.push(`edit/${id}`);
+// 本を削除
+const removeBook = async (seq: number) => {
+  const recordId = `${auth.state.user.uid}-${seq}`;
+  await deleteDoc(doc(db, FIRESTORE_PATH, recordId));
+  books.value = books.value.filter((book: Book) => book.seq !== seq);
 };
 
+// 本をすべて削除
 const deleteLocalStorage = async () => {
   const isDeleted = "localStorageのデータを削除してもよろしいでしょうか";
   if (confirm(isDeleted)) {
@@ -101,15 +107,14 @@ const deleteLocalStorage = async () => {
   }
 };
 
+// 編集画面に遷移
+const goToEditPage = (id: string) => {
+  router.push(`edit/${id}`);
+};
+
 const isAuth = computed(() => {
   return store.state.auth.user.uid ? true : false;
 });
-
-const FIRESTORE_PATH = "books";
-const addBookToFirestore = async (book: Book) => {
-  const recordId = `${book.uid}-${book.seq}`;
-  await setDoc(doc(db, FIRESTORE_PATH, recordId), book);
-};
 
 // TODO ソート機能を追加する？
 </script>
