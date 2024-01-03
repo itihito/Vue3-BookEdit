@@ -21,68 +21,44 @@ import auth from "./store/auth";
 
 const router = useRouter();
 const books = ref<Book[]>([]);
-const newBook = ref<string>("");
 const store = useStore();
 const FIRESTORE_PATH = "books";
+const isAuth = computed(() => {
+  return store.state.auth.user.uid ? true : false;
+});
 
 onMounted(async () => {
-  const q = query(
-    collection(db, "books"),
-    where("uid", "==", auth.state.user.uid)
-  );
-  const booksData = await getDocs(q);
-  books.value = booksData.docs.map((doc) => doc.data()) as Book[];
+  await fetchBooks();
 });
 
 // 本を追加
 const addBook = async (book: Book) => {
-  const currentSeq =
-    books.value.length > 0
-      ? Math.max(...books.value.map((b) => b.seq || 0)) + 1
-      : 1;
+  const currentSeq = getCurrentSeq();
   const addBook: Book = {
+    ...book,
     uid: auth.state.user.uid,
     seq: currentSeq,
-    bookId: book.bookId,
-    title: book.title,
-    description: book.description,
-    image: book.image,
-    date: book.date,
-    createdAt: book.createdAt,
-    updatedAt: book.updatedAt,
-    memo: book.memo,
   };
 
   const recordId = `${addBook.uid}-${addBook.seq}`;
   await setDoc(doc(db, FIRESTORE_PATH, recordId), addBook);
 
-  books.value.push(addBook);
-  newBook.value = "";
+  updateBooks([...books.value, addBook]);
+
   goToEditPage(addBook.bookId);
 };
 
 // 本を更新
 const updateBookInfo = async (book: Book) => {
-  const startIndex = books.value.findIndex((b) => b.bookId === book.bookId);
-
-  const updateBook: Book = {
-    uid: book.uid,
-    seq: book.seq,
-    bookId: book.bookId,
-    title: book.title,
-    description: book.description,
-    image: book.image,
-    date: book.date,
-    createdAt: book.createdAt,
-    updatedAt: book.updatedAt,
-    memo: book.memo,
-  };
-
-  const recordId = `${updateBook.uid}-${updateBook.seq}`;
+  const recordId = `${book.uid}-${book.seq}`;
   const bookDocRef = doc(db, FIRESTORE_PATH, recordId);
-  await updateDoc(bookDocRef, updateBook);
+  await updateDoc(bookDocRef, book);
 
-  books.value.splice(startIndex, 1, updateBook);
+  const tempBooks = [...books.value];
+  const index = tempBooks.findIndex((e) => e.bookId === book.bookId);
+  tempBooks[index] = { ...book };
+  updateBooks(tempBooks);
+
   router.push("/");
 };
 
@@ -90,15 +66,15 @@ const updateBookInfo = async (book: Book) => {
 const removeBook = async (seq: number) => {
   const recordId = `${auth.state.user.uid}-${seq}`;
   await deleteDoc(doc(db, FIRESTORE_PATH, recordId));
-  books.value = books.value.filter((book: Book) => book.seq !== seq);
-};
 
+  const updatedBooks = books.value.filter((book: Book) => book.seq !== seq);
+  updateBooks(updatedBooks);
+};
 // 本をすべて削除
 const deleteLocalStorage = async () => {
   const isDeleted = "localStorageのデータを削除してもよろしいでしょうか";
   if (confirm(isDeleted)) {
-    // localStorage.setItem(STORAGE_KEY, "");
-    // localStorage.removeItem(STORAGE_KEY);
+    updateBooks([]);
     books.value = [];
     await router.push("/");
     window.location.reload();
@@ -110,9 +86,22 @@ const goToEditPage = (id: string) => {
   router.push(`edit/${id}`);
 };
 
-const isAuth = computed(() => {
-  return store.state.auth.user.uid ? true : false;
-});
+const fetchBooks = async () => {
+  const booksData = await getDocs(
+    query(collection(db, "books"), where("uid", "==", auth.state.user.uid))
+  );
+  books.value = booksData.docs.map((doc) => doc.data()) as Book[];
+};
+
+const getCurrentSeq = () => {
+  return books.value.length > 0
+    ? Math.max(...books.value.map((b) => b.seq || 0)) + 1
+    : 1;
+};
+
+const updateBooks = (newBooks: Book[]) => {
+  books.value = newBooks;
+};
 
 // TODO ソート機能を追加する？
 </script>

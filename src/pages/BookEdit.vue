@@ -16,19 +16,15 @@ const inputDate = ref();
 const date = ref(book.value.date);
 
 const emit = defineEmits(["update-book-info"]);
-
 const updateBookInfo = () => {
-  emit("update-book-info", {
-    seq: book.value.seq,
-    bookId: bookId,
-    title: book.value.title,
-    description: book.value.description,
-    image: book.value.image,
+  const updateBook = {
+    ...book.value,
     date: date.value,
     memo: book.value.memo,
-    createdAt: book.value.createdAt,
     updatedAt: new Date().toISOString(),
-  });
+  } as Book;
+
+  emit("update-book-info", updateBook);
 };
 
 function formatDate(inputDate: Date): string {
@@ -40,7 +36,7 @@ function formatDate(inputDate: Date): string {
 }
 
 const updateDate = () => {
-  const formattedDate = formatDate(inputDate.value);
+  const formattedDate = formatDate(new Date(inputDate.value));
   date.value = formattedDate;
 };
 </script>

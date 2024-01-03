@@ -4,9 +4,13 @@ import axiosClient from "../api/axiosClieant";
 import { Book, SearchResultBook } from "../typings/Types";
 import router from "../router";
 
+type Props = {
+  books: Book[];
+};
+
 const keyword = ref<string>("");
 const searchResults = ref<SearchResultBook[]>([]);
-const { books } = defineProps(["books"]);
+const { books } = defineProps<Props>();
 
 const search = async (keyword: string) => {
   searchResults.value = [];
