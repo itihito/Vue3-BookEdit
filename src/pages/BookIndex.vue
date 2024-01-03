@@ -7,7 +7,7 @@ type Props = {
   books: Book[];
 };
 
-defineProps<Props>();
+const { books } = defineProps<Props>();
 const emit = defineEmits(["deleteBookList", "delete-local-storage"]);
 const deleteBook = (seq: number) => {
   emit("deleteBookList", seq);
@@ -29,8 +29,12 @@ const deleteLocalStorage = () => {
       <v-col cols="12" class="mx-auto mt-2 d-flex justify-space-between">
         <v-btn color="primary" to="/search" v-if="auth.uid">検索する</v-btn>
         <v-btn color="primary" to="/login" v-else>ログインする</v-btn>
-        <v-btn class="bg-error ml-4" color="" v-on:click="deleteLocalStorage"
-          >本をすべて削除する</v-btn
+        <v-btn
+          v-if="books && books.length > 0"
+          class="bg-error ml-4"
+          color=""
+          v-on:click="deleteLocalStorage"
+          >全ての本を削除する</v-btn
         >
       </v-col>
     </v-row>

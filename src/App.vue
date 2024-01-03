@@ -23,9 +23,7 @@ const router = useRouter();
 const books = ref<Book[]>([]);
 const store = useStore();
 const FIRESTORE_PATH = "books";
-const isAuth = computed(() => {
-  return store.state.auth.user.uid ? true : false;
-});
+const isAuth = computed(() => !!store.state.auth.user.uid);
 
 onMounted(async () => {
   await fetchBooks();
@@ -63,7 +61,7 @@ const updateBookInfo = async (book: Book) => {
 };
 
 // 本を削除
-const removeBook = async (seq: number) => {
+const deleteBook = async (seq: number) => {
   const recordId = `${auth.state.user.uid}-${seq}`;
   await deleteDoc(doc(db, FIRESTORE_PATH, recordId));
 
@@ -71,12 +69,20 @@ const removeBook = async (seq: number) => {
   updateBooks(updatedBooks);
 };
 // 本をすべて削除
-const deleteLocalStorage = async () => {
-  const isDeleted = "localStorageのデータを削除してもよろしいでしょうか";
+const deleteBooks = async () => {
+  const isDeleted = "全ての本を削除してもよろしいでしょうか";
   if (confirm(isDeleted)) {
+    const booksData = await getDocs(
+      query(collection(db, "books"), where("uid", "==", auth.state.user.uid))
+    );
+
+    await Promise.all(
+      booksData.docs.map(async (bookDoc) => {
+        await deleteDoc(doc(db, FIRESTORE_PATH, bookDoc.id));
+      })
+    );
+
     updateBooks([]);
-    books.value = [];
-    await router.push("/");
     window.location.reload();
   }
 };
@@ -122,8 +128,8 @@ const updateBooks = (newBooks: Book[]) => {
           :books="books"
           @add-book-list="addBook"
           @update-book-info="updateBookInfo"
-          @delete-Book-List="removeBook"
-          @delete-local-storage="deleteLocalStorage"
+          @delete-Book-List="deleteBook"
+          @delete-local-storage="deleteBooks"
         />
       </v-container>
     </v-main>
