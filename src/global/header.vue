@@ -22,7 +22,7 @@ const logout = async () => {
 <template>
   <div>
     <v-app-bar app color="primary" dark>
-      <v-btn class="text-h5" href="/">読書管理アプリ</v-btn>
+      <v-btn class="text-h5" href="/">読書感想アプリ</v-btn>
       <v-spacer></v-spacer>
       <v-sheet color="primary" v-if="isAuth">
         <v-btn class="bg-error ml-4 mr-2" @click="logout"
