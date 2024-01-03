@@ -7,7 +7,6 @@ import { useRouter } from "vue-router";
 import { Book } from "./typings/Types";
 import { computed } from "vue";
 import {
-  addDoc,
   getDocs,
   updateDoc,
   collection,
@@ -54,8 +53,8 @@ const addBook = async (book: Book) => {
     memo: book.memo,
   };
 
-  const recordId = `${book.uid}-${book.seq}`;
-  await setDoc(doc(db, FIRESTORE_PATH, recordId), book);
+  const recordId = `${addBook.uid}-${addBook.seq}`;
+  await setDoc(doc(db, FIRESTORE_PATH, recordId), addBook);
 
   books.value.push(addBook);
   newBook.value = "";
@@ -64,11 +63,10 @@ const addBook = async (book: Book) => {
 
 // 本を更新
 const updateBookInfo = async (book: Book) => {
-  const startIndex = books.value.findIndex(
-    (book) => book.bookId === book.bookId
-  );
+  const startIndex = books.value.findIndex((b) => b.bookId === book.bookId);
+
   const updateBook: Book = {
-    uid: auth.state.user.uid,
+    uid: book.uid,
     seq: book.seq,
     bookId: book.bookId,
     title: book.title,
