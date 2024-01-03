@@ -62,16 +62,28 @@ const updateBookInfo = async (book: Book) => {
 
 // 本を削除
 const deleteBook = async (seq: number) => {
-  const recordId = `${auth.state.user.uid}-${seq}`;
-  await deleteDoc(doc(db, FIRESTORE_PATH, recordId));
+  const book = books.value.find((b) => b.seq === seq);
 
-  const updatedBooks = books.value.filter((book: Book) => book.seq !== seq);
-  updateBooks(updatedBooks);
+  if (!book) {
+    console.error("Book not found for sequence", seq);
+    return;
+  }
+
+  const confirmMessage = `${book.title} を削除してもよろしいでしょうか`;
+
+  if (confirm(confirmMessage)) {
+    const recordId = `${auth.state.user.uid}-${seq}`;
+    await deleteDoc(doc(db, FIRESTORE_PATH, recordId));
+
+    const updatedBooks = books.value.filter((book: Book) => book.seq !== seq);
+    updateBooks(updatedBooks);
+  }
 };
+
 // 本をすべて削除
 const deleteBooks = async () => {
-  const isDeleted = "全ての本を削除してもよろしいでしょうか";
-  if (confirm(isDeleted)) {
+  const confirmMessage = "全ての本を削除してもよろしいでしょうか";
+  if (confirm(confirmMessage)) {
     const booksData = await getDocs(
       query(collection(db, "books"), where("uid", "==", auth.state.user.uid))
     );
