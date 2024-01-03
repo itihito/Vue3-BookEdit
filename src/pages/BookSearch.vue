@@ -91,13 +91,13 @@ const goToRegisterPage = (id: string) => {
               <v-spacer></v-spacer>
               <v-card-actions>
                 <v-btn
-                  class="bg-indigo"
+                  class="bg-indigo px-4 rounded-pill"
                   elevation="8"
                   color="white"
-                  icon="mdi-plus"
                   :disabled="book.isAdded"
                   v-on:click="goToRegisterPage(book.bookId)"
-                />
+                  ><v-icon>mdi-plus</v-icon>追加する
+                </v-btn>
               </v-card-actions>
             </v-col>
           </v-row>
