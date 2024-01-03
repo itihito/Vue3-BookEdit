@@ -80,10 +80,10 @@ const goToRegisterPage = (id: string) => {
         v-for="(book, index) in searchResults"
         :key="index"
       >
-        <v-card class="mx-auto">
+        <v-card class="mx-auto" height="180px" elevation="8">
           <v-row>
             <v-col cols="4">
-              <v-img :src="book.image"></v-img>
+              <v-img height="160px" :src="book.image"></v-img>
             </v-col>
             <v-col cols="8">
               <v-card-title>{{ book.title }}</v-card-title>
