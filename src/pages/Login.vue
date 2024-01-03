@@ -18,39 +18,41 @@ const router = useRouter();
 // サインイン処理
 const signIn = () => {
   // メールアドレスとパスワードが入力されているかを確認
-  if (email.value == "" || email.value == "") return;
+  if (email.value === "" || password.value === "") return;
+
   signInWithEmailAndPassword(auth, email.value, password.value)
-    .then((userCredential) => {
+    .then(async (userCredential) => {
       // 成功時処理
       const user = userCredential.user;
-      console.log(user);
       store.dispatch("auth/SetUserStateAction", {
         name: user.email,
         uid: user.uid,
       });
-      router.push("/");
+      await router.push("/");
+      location.reload();
     })
     .catch((error) => {
       // 失敗時処理
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.error(errorCode, errorMessage);
     });
 };
 
 // サインアップ処理
 const createAccount = () => {
+  if (email.value === "" || password.value === "") return;
+
   createUserWithEmailAndPassword(auth, email.value, password.value)
     .then((userCredential) => {
       // 成功時処理
       const user = userCredential.user;
-      console.log(user);
     })
     .catch((error) => {
       // 失敗時処理
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.error(errorCode, errorMessage);
     });
 };
 
@@ -75,6 +77,7 @@ onMounted(() => {
           v-model="password"
           bg-color="white"
           label="パスワード"
+          type="password"
         ></v-text-field>
         <v-sheet
           width="70%"
