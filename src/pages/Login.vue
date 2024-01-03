@@ -46,7 +46,7 @@ const createAccount = () => {
   createUserWithEmailAndPassword(auth, email.value, password.value)
     .then((userCredential) => {
       // 成功時処理
-      const user = userCredential.user;
+      userCredential.user;
     })
     .catch((error) => {
       // 失敗時処理
