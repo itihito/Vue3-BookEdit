@@ -49,14 +49,15 @@ const deleteLocalStorage = () => {
         :key="book.seq"
       >
         <v-card>
-          <v-row>
+          <v-row class="d-flex justify-center">
             <v-col cols="4">
-              <v-img :src="book.image"></v-img>
+              <v-img :src="book.image" height="160px"></v-img>
             </v-col>
           </v-row>
-          <v-col cols="8">
-            <v-card-title>{{ book.title }}</v-card-title>
-            読んだ日：{{ book.date }} 感想：{{ book.memo }}
+          <v-col cols="12">
+            <v-card-title class="headline">{{ book.title }}</v-card-title>
+            <v-card-subtitle> 読書日：{{ book.date }} </v-card-subtitle>
+            <v-card-subtitle> 感想：{{ book.memo }} </v-card-subtitle>
             <v-spacer></v-spacer>
             <v-card-actions>
               <v-btn
@@ -79,4 +80,9 @@ const deleteLocalStorage = () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.headline {
+  text-overflow: inherit;
+  white-space: unset;
+}
+</style>

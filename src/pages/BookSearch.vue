@@ -80,14 +80,16 @@ const goToRegisterPage = (id: string) => {
         v-for="(book, index) in searchResults"
         :key="index"
       >
-        <v-card class="mx-auto" height="180px" elevation="8">
+        <v-card elevation="8">
           <v-row>
-            <v-col cols="4">
+            <v-col cols="4" class="pl-8">
               <v-img height="160px" :src="book.image"></v-img>
             </v-col>
             <v-col cols="8">
               <v-card-title>{{ book.title }}</v-card-title>
-              {{ book.description }}
+              <v-card-subtitle class="headline">{{
+                book.description
+              }}</v-card-subtitle>
               <v-spacer></v-spacer>
               <v-card-actions>
                 <v-btn
@@ -108,4 +110,9 @@ const goToRegisterPage = (id: string) => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.headline {
+  text-overflow: inherit;
+  white-space: unset;
+}
+</style>
