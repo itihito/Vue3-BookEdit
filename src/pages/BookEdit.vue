@@ -2,29 +2,53 @@
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 import { Book } from "../typings/Types";
-
-type Props = {
-  books: Book[];
-};
+import { getDocs, collection, where, query, limit } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import { onMounted } from "vue";
+import auth from "../store/auth";
 
 const route = useRoute();
 const bookId = route.params.bookId as string;
-const { books } = defineProps<Props>();
-const book = ref(books.find((book) => book.bookId === bookId)!);
+const book = ref<Book | null>();
 
-const inputDate = ref();
-const date = ref(book.value.date);
+const inputDate = ref<string | null>();
+const date = ref<string | null>();
+const inputMemo = ref<string>("");
 
 const emit = defineEmits(["update-book-info"]);
-const updateBookInfo = () => {
-  const updateBook = {
-    ...book.value,
-    date: date.value,
-    memo: book.value.memo,
-    updatedAt: new Date().toISOString(),
-  } as Book;
 
-  emit("update-book-info", updateBook);
+onMounted(async () => {
+  await fetchBook();
+});
+
+const fetchBook = async () => {
+  const bookData = await getDocs(
+    query(
+      collection(db, "books"),
+      where("uid", "==", auth.state.user.uid),
+      where("bookId", "==", bookId),
+      limit(1)
+    )
+  );
+  const fetchedBook = bookData.docs.map((doc) => doc.data())[0] as Book;
+  if (fetchedBook) {
+    book.value = fetchedBook;
+    date.value = fetchedBook.date;
+    inputMemo.value = fetchedBook.memo;
+  }
+};
+
+const updateBookInfo = () => {
+  if (book.value && date.value) {
+    const updateBook = {
+      ...book.value,
+      date: date.value,
+      memo: inputMemo.value,
+      updatedAt: new Date().toISOString(),
+    } as Book;
+
+    emit("update-book-info", updateBook);
+  }
 };
 
 function formatDate(inputDate: Date): string {
@@ -36,8 +60,10 @@ function formatDate(inputDate: Date): string {
 }
 
 const updateDate = () => {
-  const formattedDate = formatDate(new Date(inputDate.value));
-  date.value = formattedDate;
+  if (inputDate.value) {
+    const formattedDate = formatDate(new Date(inputDate.value));
+    date.value = formattedDate;
+  }
 };
 </script>
 
@@ -48,10 +74,10 @@ const updateDate = () => {
         <v-card>
           <v-row>
             <v-col cols="4">
-              <v-img :src="book.image"></v-img>
+              <v-img :src="book?.image"></v-img>
             </v-col>
             <v-col cols="8">
-              <v-card-title> タイトル：{{ book.title }} </v-card-title>
+              <v-card-title> タイトル：{{ book?.title }} </v-card-title>
               読んだ日：
               <v-menu>
                 <template v-slot:activator="{ props }">
@@ -68,7 +94,7 @@ const updateDate = () => {
                   @update:modelValue="updateDate"
                 ></v-date-picker>
               </v-menu>
-              感想：<v-textarea class="mx-2" v-model="book.memo"></v-textarea>
+              感想：<v-textarea class="mx-2" v-model="inputMemo"></v-textarea>
               <v-card-actions>
                 <v-btn class="bg-secondary" to="/">一覧に戻る</v-btn>
                 <v-btn class="bg-info" @click="updateBookInfo">更新する</v-btn>

@@ -90,7 +90,10 @@ const fetchBooks = async () => {
   const booksData = await getDocs(
     query(collection(db, "books"), where("uid", "==", auth.state.user.uid))
   );
-  books.value = booksData.docs.map((doc) => doc.data()) as Book[];
+  const fetchedBooks = booksData.docs.map((doc) => doc.data()) as Book[];
+  if (fetchedBooks && fetchedBooks.length > 0) {
+    books.value = fetchedBooks;
+  }
 };
 
 const getCurrentSeq = () => {
