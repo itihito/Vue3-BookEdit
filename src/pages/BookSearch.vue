@@ -21,6 +21,8 @@ const search = async (keyword: string) => {
   const response = await axiosClient.get("", { params });
 
   for (const book of response.data.items) {
+    console.log("search画面", book);
+
     const title = book.volumeInfo.title;
     const img = book.volumeInfo.imageLinks;
     const description = book.volumeInfo.description;
@@ -51,21 +53,28 @@ const goToRegisterPage = (id: string) => {
   <div>
     <!-- 検索インプット要素 -->
     <v-row class="d-flex justify-center">
-      <v-col cols="6">
+      <v-col cols="6" class="d-flex">
         <v-text-field
           label="本のタイトルを検索"
           v-model="keyword"
         ></v-text-field>
-      </v-col>
-    </v-row>
-
-    <!-- 検索＆一覧に戻るボタン -->
-    <v-row class="d-flex justify-center">
-      <v-col cols="3" class="d-flex justify-center">
-        <v-btn color="primary" @click="search(keyword)">検索する</v-btn>
-      </v-col>
-      <v-col cols="3" class="d-flex justify-center">
-        <v-btn color="secondary" to="/"> 一覧に戻る </v-btn>
+        <v-btn
+          color="primary"
+          @click="search(keyword)"
+          height="70%"
+          class="rounded-0 rounded-e-xl"
+        >
+          <v-icon color="white" size="x-large" class="search-icon"
+            >mdi-magnify</v-icon
+          >
+        </v-btn>
+        <!-- <v-btn
+          class="bg-primary rounded-0 rounded-e-xl"
+          @click="search(keyword)"
+          height="70%"
+          icon="mdi-magnify"
+        >
+        </v-btn> -->
       </v-col>
     </v-row>
 
@@ -114,5 +123,8 @@ const goToRegisterPage = (id: string) => {
 .headline {
   text-overflow: inherit;
   white-space: unset;
+}
+.search-icon {
+  transform: scale(1.4);
 }
 </style>
