@@ -96,7 +96,7 @@ onMounted(() => {
             <v-col cols="8">
               <v-card-title> タイトル：{{ bookInfo.title }} </v-card-title>
               読んだ日：
-              <v-menu>
+              <v-menu :closeOnContentClick="false">
                 <template v-slot:activator="{ props }">
                   <v-text-field
                     v-model="date"
