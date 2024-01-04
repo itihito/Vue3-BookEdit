@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { Book } from "../typings/Types";
 import axiosClient from "../api/axiosClieant";
+import router from "../router";
 
 const route = useRoute();
 const bookId = route.params.bookId as string;
@@ -30,6 +31,7 @@ const fetchData = async () => {
   try {
     const res = await axiosClient.get(bookId);
     const { title, description, imageLinks } = res.data.volumeInfo;
+
     bookInfo.value.title = title || "";
     bookInfo.value.description = description ? description.slice(0, 40) : "";
     bookInfo.value.image = imageLinks ? imageLinks.thumbnail || "" : "";
@@ -59,6 +61,10 @@ const updateDate = () => {
   if (inputDate.value) {
     date.value = formatDate(new Date(inputDate.value));
   }
+};
+
+const toToSearchPage = () => {
+  router.back();
 };
 </script>
 
@@ -91,7 +97,9 @@ const updateDate = () => {
               </v-menu>
               感想：<v-textarea class="mx-2" v-model="inputMemo"></v-textarea>
               <v-card-actions>
-                <v-btn class="bg-secondary" to="/">一覧に戻る</v-btn>
+                <v-btn class="bg-indigo" @click="toToSearchPage"
+                  >検索結果に戻る</v-btn
+                >
                 <v-btn class="bg-info" @click="addBookList">登録する</v-btn>
               </v-card-actions>
             </v-col>
