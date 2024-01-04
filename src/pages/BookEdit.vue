@@ -6,6 +6,7 @@ import { getDocs, collection, where, query, limit } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { onMounted } from "vue";
 import auth from "../store/auth";
+import { useHistoryState, onBackupState } from "vue-history-state";
 
 const route = useRoute();
 const bookId = route.params.bookId as string;
@@ -65,6 +66,23 @@ const updateDate = () => {
     date.value = formattedDate;
   }
 };
+
+onBackupState(() => {
+  return {
+    date: date.value,
+    inputMemo: inputMemo.value,
+  };
+});
+
+onMounted(() => {
+  const historyState = useHistoryState();
+  // if (historyState.action === "forward") {
+  if (historyState.data) {
+    date.value = historyState.data.date;
+    inputMemo.value = historyState.data.inputMemo;
+  }
+  // }
+});
 </script>
 
 <template>

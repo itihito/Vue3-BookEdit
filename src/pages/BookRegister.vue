@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { Book } from "../typings/Types";
 import axiosClient from "../api/axiosClieant";
+import { useHistoryState, onBackupState } from "vue-history-state";
 import router from "../router";
 
 const route = useRoute();
@@ -66,6 +67,21 @@ const updateDate = () => {
 const toToSearchPage = () => {
   router.back();
 };
+
+onBackupState(() => {
+  return {
+    date: date.value,
+    inputMemo: inputMemo.value,
+  };
+});
+
+onMounted(() => {
+  const historyState = useHistoryState();
+  if (historyState.data) {
+    date.value = historyState.data.date;
+    inputMemo.value = historyState.data.inputMemo;
+  }
+});
 </script>
 
 <template>
