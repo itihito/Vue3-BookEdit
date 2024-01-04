@@ -35,7 +35,9 @@ const fetchData = async () => {
 
     bookInfo.value.title = title || "";
     bookInfo.value.description = description ? description.slice(0, 40) : "";
-    bookInfo.value.image = imageLinks ? imageLinks.thumbnail || "" : "";
+    bookInfo.value.image = imageLinks.small
+      ? convertUrlHttpToHttps(imageLinks.small) || ""
+      : imageLinks.thumbnail;
   } catch (error) {
     console.error("Error fetching data:", error);
   }
@@ -82,6 +84,14 @@ onMounted(() => {
     inputMemo.value = historyState.data.inputMemo;
   }
 });
+
+const convertUrlHttpToHttps = (url: string) => {
+  // URLがhttpから始まる場合にhttpsに書き換える
+  if (url && url.startsWith("http://")) {
+    return url.replace("http://", "https://");
+  }
+  return url;
+};
 </script>
 
 <template>
