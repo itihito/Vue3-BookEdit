@@ -76,6 +76,7 @@ onMounted(() => {
           label="本のタイトルを検索"
           v-model="keyword"
           @keyup.enter="search(keyword)"
+          autofocus
         ></v-text-field>
         <v-btn
           color="primary"
