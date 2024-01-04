@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { Book } from "../typings/Types";
 import { getDocs, collection, where, query, limit } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { onMounted } from "vue";
 import auth from "../store/auth";
 import { useHistoryState, onBackupState } from "vue-history-state";
 
@@ -19,10 +18,19 @@ const inputMemo = ref<string>("");
 const emit = defineEmits(["update-book-info"]);
 
 onMounted(async () => {
-  await fetchBook();
+  const { historyDate, historyMemo } = getHistoryState();
+  await fetchBook(historyDate, historyMemo);
 });
 
-const fetchBook = async () => {
+const getHistoryState = () => {
+  const historyState = useHistoryState();
+  return {
+    historyDate: historyState.data?.date || "",
+    historyMemo: historyState.data?.inputMemo || "",
+  };
+};
+
+const fetchBook = async (historyDate?: string, historyMemo?: string) => {
   const bookData = await getDocs(
     query(
       collection(db, "books"),
@@ -34,8 +42,8 @@ const fetchBook = async () => {
   const fetchedBook = bookData.docs.map((doc) => doc.data())[0] as Book;
   if (fetchedBook) {
     book.value = fetchedBook;
-    date.value = fetchedBook.date;
-    inputMemo.value = fetchedBook.memo;
+    date.value = historyDate ? historyDate : fetchedBook.date;
+    inputMemo.value = historyMemo ? historyMemo : fetchedBook.memo;
   }
 };
 
@@ -72,16 +80,6 @@ onBackupState(() => {
     date: date.value,
     inputMemo: inputMemo.value,
   };
-});
-
-onMounted(() => {
-  const historyState = useHistoryState();
-  // if (historyState.action === "forward") {
-  if (historyState.data) {
-    date.value = historyState.data.date;
-    inputMemo.value = historyState.data.inputMemo;
-  }
-  // }
 });
 </script>
 
