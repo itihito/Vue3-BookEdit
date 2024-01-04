@@ -57,6 +57,7 @@ const goToRegisterPage = (id: string) => {
         <v-text-field
           label="本のタイトルを検索"
           v-model="keyword"
+          @keyup.enter="search(keyword)"
         ></v-text-field>
         <v-btn
           color="primary"
@@ -68,13 +69,6 @@ const goToRegisterPage = (id: string) => {
             >mdi-magnify</v-icon
           >
         </v-btn>
-        <!-- <v-btn
-          class="bg-primary rounded-0 rounded-e-xl"
-          @click="search(keyword)"
-          height="70%"
-          icon="mdi-magnify"
-        >
-        </v-btn> -->
       </v-col>
     </v-row>
 
