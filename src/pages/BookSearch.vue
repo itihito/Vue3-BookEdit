@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axiosClient from "../api/axiosClieant";
 import { Book, SearchResultBook } from "../typings/Types";
 import router from "../router";
+import { useHistoryState, onBackupState } from "vue-history-state";
 
 type Props = {
   books: Book[];
@@ -21,8 +22,6 @@ const search = async (keyword: string) => {
   const response = await axiosClient.get("", { params });
 
   for (const book of response.data.items) {
-    console.log("search画面", book);
-
     const title = book.volumeInfo.title;
     const img = book.volumeInfo.imageLinks;
     const description = book.volumeInfo.description;
@@ -45,8 +44,27 @@ const search = async (keyword: string) => {
 const emit = defineEmits(["add-book-list"]);
 
 const goToRegisterPage = (id: string) => {
-  router.push(`register/${id}`);
+  router.push({
+    name: "BookRegister",
+    params: { bookId: id },
+  });
 };
+
+onBackupState(() => {
+  return {
+    keyword: keyword.value,
+    searchResults: searchResults.value,
+  };
+});
+
+onMounted(() => {
+  const historyState = useHistoryState();
+
+  if (historyState.data) {
+    keyword.value = historyState.data.keyword;
+    searchResults.value = historyState.data.searchResults;
+  }
+});
 </script>
 
 <template>

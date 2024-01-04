@@ -100,7 +100,10 @@ const deleteBooks = async () => {
 
 // 編集画面に遷移
 const goToEditPage = (id: string) => {
-  router.push(`edit/${id}`);
+  router.push({
+    name: "BookEdit",
+    params: { bookId: id },
+  });
 };
 
 const fetchBooks = async () => {
