@@ -10,11 +10,11 @@ import BookDetail from "../components/bookDetail.vue";
 const route = useRoute();
 const bookId = route.params.bookId as string;
 const inputDate = ref();
-const date = ref(formatDate(new Date()));
+const date = ref();
 const inputMemo = ref<string>("");
 const bookInfo = ref<Book>({
-  uid: "", // 型定義エラー回避のための仮定義
-  seq: -1, // 型定義エラー回避のための仮定義
+  uid: "",
+  seq: -1,
   bookId: bookId,
   title: "",
   description: "",
@@ -33,9 +33,6 @@ let bookDetailInfo = ref<BookDetailInfo[]>([]);
 
 onMounted(async () => {
   const { historyDate, historyMemo } = getHistoryState();
-  console.log("historyDate", historyDate);
-  console.log("historyMemo", historyMemo);
-
   await fetchData(historyDate, historyMemo);
 });
 
@@ -45,7 +42,7 @@ const fetchData = async (historyDate?: string, historyMemo?: string) => {
     setBookInfo(res);
     setBookDetailInfo();
 
-    date.value = historyDate || "";
+    date.value = historyDate || formatDate(new Date());
     inputMemo.value = historyMemo || "";
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -63,7 +60,6 @@ const setBookInfo = (res: any) => {
     language,
     printedPageCount,
   } = res.data.volumeInfo;
-  console.log("res.data.volumeInfo", res.data);
 
   bookInfo.value.title = title || "";
   bookInfo.value.description = description ? description.slice(0, 40) : "";
