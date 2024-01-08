@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axiosClient from "../api/axiosClieant";
 import { Book, SearchResultBook } from "../typings/Types";
 import router from "../router";
+import { useHistoryState, onBackupState } from "vue-history-state";
 
 type Props = {
   books: Book[];
@@ -43,29 +44,50 @@ const search = async (keyword: string) => {
 const emit = defineEmits(["add-book-list"]);
 
 const goToRegisterPage = (id: string) => {
-  router.push(`register/${id}`);
+  router.push({
+    name: "BookRegister",
+    params: { bookId: id },
+  });
 };
+
+onBackupState(() => {
+  return {
+    keyword: keyword.value,
+    searchResults: searchResults.value,
+  };
+});
+
+onMounted(() => {
+  const historyState = useHistoryState();
+
+  if (historyState.data) {
+    keyword.value = historyState.data.keyword;
+    searchResults.value = historyState.data.searchResults;
+  }
+});
 </script>
 
 <template>
   <div>
     <!-- 検索インプット要素 -->
     <v-row class="d-flex justify-center">
-      <v-col cols="6">
+      <v-col cols="6" class="d-flex">
         <v-text-field
           label="本のタイトルを検索"
           v-model="keyword"
+          @keyup.enter="search(keyword)"
+          autofocus
         ></v-text-field>
-      </v-col>
-    </v-row>
-
-    <!-- 検索＆一覧に戻るボタン -->
-    <v-row class="d-flex justify-center">
-      <v-col cols="3" class="d-flex justify-center">
-        <v-btn color="primary" @click="search(keyword)">検索する</v-btn>
-      </v-col>
-      <v-col cols="3" class="d-flex justify-center">
-        <v-btn color="secondary" to="/"> 一覧に戻る </v-btn>
+        <v-btn
+          color="primary"
+          @click="search(keyword)"
+          height="70%"
+          class="rounded-0 rounded-e-xl"
+        >
+          <v-icon color="white" size="x-large" class="search-icon"
+            >mdi-magnify</v-icon
+          >
+        </v-btn>
       </v-col>
     </v-row>
 
@@ -114,5 +136,8 @@ const goToRegisterPage = (id: string) => {
 .headline {
   text-overflow: inherit;
   white-space: unset;
+}
+.search-icon {
+  transform: scale(1.4);
 }
 </style>

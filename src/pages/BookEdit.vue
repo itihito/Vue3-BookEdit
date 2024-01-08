@@ -1,27 +1,38 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { Book } from "../typings/Types";
+import { Book, BookDetailInfo } from "../typings/Types";
 import { getDocs, collection, where, query, limit } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { onMounted } from "vue";
 import auth from "../store/auth";
+import { useHistoryState, onBackupState } from "vue-history-state";
+import BookDetail from "../components/bookDetail.vue";
 
 const route = useRoute();
 const bookId = route.params.bookId as string;
-const book = ref<Book | null>();
-
 const inputDate = ref<string | null>();
-const date = ref<string | null>();
+const date = ref<string>("");
 const inputMemo = ref<string>("");
+const bookInfo = ref<Book>();
+let bookDetailInfo = ref<BookDetailInfo[]>([]);
 
 const emit = defineEmits(["update-book-info"]);
 
 onMounted(async () => {
-  await fetchBook();
+  const { historyDate, historyMemo } = getHistoryState();
+  await fetchBook(historyDate, historyMemo);
+  setBookDetailInfo();
 });
 
-const fetchBook = async () => {
+const getHistoryState = () => {
+  const historyState = useHistoryState();
+  return {
+    historyDate: historyState.data?.date || "",
+    historyMemo: historyState.data?.inputMemo || "",
+  };
+};
+
+const fetchBook = async (historyDate?: string, historyMemo?: string) => {
   const bookData = await getDocs(
     query(
       collection(db, "books"),
@@ -32,16 +43,47 @@ const fetchBook = async () => {
   );
   const fetchedBook = bookData.docs.map((doc) => doc.data())[0] as Book;
   if (fetchedBook) {
-    book.value = fetchedBook;
-    date.value = fetchedBook.date;
-    inputMemo.value = fetchedBook.memo;
+    bookInfo.value = fetchedBook;
+    date.value = historyDate || fetchedBook.date;
+    inputMemo.value = historyMemo || fetchedBook.memo;
   }
 };
 
+const setBookDetailInfo = () => {
+  bookDetailInfo.value = [
+    {
+      label: "著者 ",
+      value: bookInfo.value?.author || "",
+    },
+    {
+      label: "出版社 ",
+      value: bookInfo.value?.publisher || "",
+    },
+    {
+      label: "発売日",
+      value: bookInfo.value?.publishedDate
+        ? convertHyphenToSlash(bookInfo.value?.publishedDate)
+        : "",
+    },
+    {
+      label: "言語 ",
+      value: bookInfo.value?.language
+        ? getLanguageName(bookInfo.value?.language)
+        : "",
+    },
+    {
+      label: "本の長さ ",
+      value: bookInfo.value?.printedPageCount
+        ? bookInfo.value?.printedPageCount + "ページ"
+        : "",
+    },
+  ];
+};
+
 const updateBookInfo = () => {
-  if (book.value && date.value) {
+  if (bookInfo.value && date.value) {
     const updateBook = {
-      ...book.value,
+      ...bookInfo.value,
       date: date.value,
       memo: inputMemo.value,
       updatedAt: new Date().toISOString(),
@@ -65,6 +107,27 @@ const updateDate = () => {
     date.value = formattedDate;
   }
 };
+
+onBackupState(() => {
+  return {
+    date: date.value,
+    inputMemo: inputMemo.value,
+  };
+});
+
+const convertHyphenToSlash = (originalDate: string): string => {
+  return originalDate.split("-").join("/") || "";
+};
+
+const getLanguageName = (languageCode: string): string => {
+  try {
+    const languageNames = new Intl.DisplayNames(["ja"], { type: "language" });
+    return languageNames.of(languageCode) || "";
+  } catch (error: any) {
+    console.error("Error:", error.message);
+    return "";
+  }
+};
 </script>
 
 <template>
@@ -72,14 +135,14 @@ const updateDate = () => {
     <v-row>
       <v-col cols="12">
         <v-card>
-          <v-row>
+          <v-row class="pb-2">
             <v-col cols="4">
-              <v-img :src="book?.image"></v-img>
+              <v-img :src="bookInfo?.image" max-height="600px"></v-img>
             </v-col>
             <v-col cols="8">
-              <v-card-title> タイトル：{{ book?.title }} </v-card-title>
+              <v-card-title> タイトル：{{ bookInfo?.title }} </v-card-title>
               読んだ日：
-              <v-menu>
+              <v-menu :closeOnContentClick="false">
                 <template v-slot:activator="{ props }">
                   <v-text-field
                     v-model="date"
@@ -101,6 +164,8 @@ const updateDate = () => {
               </v-card-actions>
             </v-col>
           </v-row>
+          <v-divider class="border-opacity-25"></v-divider>
+          <BookDetail :bookDetailInfo="bookDetailInfo" />
         </v-card>
       </v-col>
     </v-row>
