@@ -44,9 +44,17 @@ const createAccount = () => {
   if (email.value === "" || password.value === "") return;
 
   createUserWithEmailAndPassword(auth, email.value, password.value)
-    .then((userCredential) => {
+    .then(async (userCredential) => {
       // 成功時処理
       userCredential.user;
+      console.log("userCredential.user", userCredential.user);
+      const user = userCredential.user;
+      store.dispatch("auth/SetUserStateAction", {
+        name: user.email,
+        uid: user.uid,
+      });
+      await router.push("/");
+      location.reload();
     })
     .catch((error) => {
       // 失敗時処理
@@ -59,8 +67,8 @@ const createAccount = () => {
 onMounted(() => {
   // ログインしているユーザーを取得する
   onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // ログイン済みの場合はインデックス画面に遷移させる
+    if (user && store.state.user?.uid) {
+      // ログイン済み、かつuidがstoreに存在する場合はインデックス画面に遷移させる
       router.push("/");
     }
   });
@@ -76,7 +84,7 @@ onMounted(() => {
         <v-text-field
           v-model="password"
           bg-color="white"
-          label="パスワード"
+          label="パスワード(6桁以上)"
           type="password"
         ></v-text-field>
         <v-sheet
