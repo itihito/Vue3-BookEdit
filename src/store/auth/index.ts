@@ -36,7 +36,11 @@ const actions = {
   },
 };
 
-const getters = {};
+const getters = {
+  getUid(state: State): string {
+    return state.user.uid;
+  },
+};
 
 export default {
   namespaced: true,
