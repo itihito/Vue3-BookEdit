@@ -31,7 +31,7 @@ const logout = async () => {
         </v-btn>
       </v-sheet>
       <v-sheet color="primary" v-else="isAuth">
-        <v-btn class="bg-white mr-2" color="indigo" href="/login"
+        <v-btn class="bg-white mr-2" color="indigo" to="/login"
           >ログイン<v-icon class="ml-2">mdi-login</v-icon>
         </v-btn>
       </v-sheet>
