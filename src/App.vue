@@ -43,7 +43,7 @@ const addBook = async (book: Book) => {
 
   updateBooks([...books.value, addBook]);
 
-  goToEditPage(addBook.bookId);
+  goToIndexPage();
 };
 
 // 本を更新
@@ -103,6 +103,13 @@ const goToEditPage = (id: string) => {
   router.push({
     name: "BookEdit",
     params: { bookId: id },
+  });
+};
+
+// Indexに遷移
+const goToIndexPage = () => {
+  router.push({
+    name: "BookIndex",
   });
 };
 

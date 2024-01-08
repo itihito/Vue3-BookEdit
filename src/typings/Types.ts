@@ -7,6 +7,11 @@ type Book = {
   image: string;
   date: string;
   memo: string;
+  author: string;
+  publisher: string;
+  publishedDate: string;
+  language: string;
+  printedPageCount: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -19,5 +24,10 @@ type SearchResultBook = {
   isAdded: boolean;
 };
 
+type BookDetailInfo = {
+  label: string;
+  value: string;
+};
+
 // まとめてエクスポート
-export type { Book, SearchResultBook };
+export type { Book, SearchResultBook, BookDetailInfo };
