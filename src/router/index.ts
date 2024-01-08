@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import BookIndex from "../pages/BookIndex.vue";
 import BookSearch from "../pages/BookSearch.vue";
 import BookEdit from "../pages/BookEdit.vue";
@@ -48,7 +48,7 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
 });
 
