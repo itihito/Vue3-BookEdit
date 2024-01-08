@@ -95,7 +95,6 @@ const deleteBooks = async () => {
     );
 
     updateBooks([]);
-    window.location.reload();
   }
 };
 
@@ -141,7 +140,7 @@ const updateBooks = (newBooks: Book[]) => {
           @add-book-list="addBook"
           @update-book-info="updateBookInfo"
           @delete-Book-List="deleteBook"
-          @delete-local-storage="deleteBooks"
+          @delete-books="deleteBooks"
         />
       </v-container>
     </v-main>
