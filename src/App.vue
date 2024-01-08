@@ -138,9 +138,6 @@ const updateBooks = (newBooks: Book[]) => {
 </script>
 
 <template>
-  <!-- <BookSearch /> -->
-  <!-- <LocalStorage />
-  <LocalStorage2 /> -->
   <v-app>
     <Header :isAuth="isAuth"></Header>
     <v-main>
