@@ -1,6 +1,4 @@
-import { onAuthStateChanged } from "firebase/auth";
 import type { Commit } from "vuex";
-import { auth } from "../../firebase/firebase";
 
 type User = {
   name: string;
@@ -11,30 +9,24 @@ interface State {
   user: User;
 }
 
-const initUser = async (): Promise<User> => {
-  return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const userData: User = { name: user.displayName || "", uid: user.uid };
-        resolve(userData);
-      } else {
-        const defaultUser: User = { name: "", uid: "" };
-        resolve(defaultUser);
-      }
-
-      // コールバックを解除
-      unsubscribe();
-    });
-  });
+const initUser = (): User => {
+  const user = localStorage.getItem("user");
+  if (user) {
+    const parsedUser = JSON.parse(user);
+    return parsedUser;
+  } else {
+    return { name: "", uid: "" };
+  }
 };
 
 const state: State = {
-  user: await initUser(),
+  user: initUser(),
 };
 
 const mutations = {
   SetUserState(state: State, payload: User) {
     state.user = payload;
+    localStorage.setItem("user", JSON.stringify(payload));
   },
 };
 

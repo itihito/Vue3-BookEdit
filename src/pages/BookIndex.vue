@@ -8,7 +8,7 @@ type Props = {
 };
 
 const { books } = defineProps<Props>();
-const emit = defineEmits(["deleteBookList", "delete-books"]);
+const emit = defineEmits(["deleteBookList", "delete-local-storage"]);
 const deleteBook = (seq: number) => {
   emit("deleteBookList", seq);
 };
@@ -18,8 +18,8 @@ const auth = computed(() => {
   return store.state.auth.user;
 });
 
-const deleteBooks = () => {
-  emit("delete-books");
+const deleteLocalStorage = () => {
+  emit("delete-local-storage");
 };
 </script>
 
@@ -33,7 +33,7 @@ const deleteBooks = () => {
           v-if="books && books.length > 0"
           class="bg-error ml-4"
           color=""
-          v-on:click="deleteBooks"
+          v-on:click="deleteLocalStorage"
           >全ての本を削除する</v-btn
         >
       </v-col>
