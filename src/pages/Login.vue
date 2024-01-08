@@ -66,7 +66,7 @@ const createAccount = () => {
 onMounted(() => {
   // ログインしているユーザーを取得する
   onAuthStateChanged(auth, (user) => {
-    if (user && store.state.user?.uid) {
+    if (user && !!store.getters["auth/getUid"]) {
       // ログイン済み、かつuidがstoreに存在する場合はインデックス画面に遷移させる
       router.push("/");
     }

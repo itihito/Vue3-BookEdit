@@ -2,9 +2,11 @@
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 const router = useRouter();
-const { isAuth } = defineProps(["isAuth"]);
+const store = useStore();
+const isAuth = !!store.getters["auth/getUid"];
 
 const logout = async () => {
   try {

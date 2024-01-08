@@ -3,8 +3,8 @@ import BookIndex from "../pages/BookIndex.vue";
 import BookSearch from "../pages/BookSearch.vue";
 import BookEdit from "../pages/BookEdit.vue";
 import Login from "../pages/Login.vue";
-import authStore from "../store/auth/index";
 import BookRegister from "../pages/BookRegister.vue";
+import { useStore } from "vuex";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -52,9 +52,12 @@ const router = createRouter({
   routes,
 });
 
+// ナビゲーションガード
 router.beforeEach((to, _from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!authStore.state.user.uid) {
+    const store = useStore();
+    // ログインしていない場合はインデックスにリダイレクトさせる
+    if (!store.getters["auth/getUid"]) {
       next({
         path: "/",
         query: {

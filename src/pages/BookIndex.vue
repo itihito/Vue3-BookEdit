@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useStore } from "vuex";
 import { Book } from "../typings/Types";
-import { computed } from "vue";
 
 type Props = {
   books: Book[];
@@ -14,9 +13,7 @@ const deleteBook = (seq: number) => {
 };
 
 const store = useStore();
-const auth = computed(() => {
-  return store.state.auth.user;
-});
+const uid = store.getters["auth/getUid"];
 
 const deleteBooks = () => {
   emit("deleteBooks");
@@ -27,7 +24,7 @@ const deleteBooks = () => {
   <div>
     <v-row>
       <v-col cols="12" class="mx-auto mt-2 d-flex justify-space-between">
-        <v-btn color="primary" to="/search" v-if="auth.uid">検索する</v-btn>
+        <v-btn color="primary" to="/search" v-if="uid">検索する</v-btn>
         <v-btn color="primary" to="/login" v-else>ログインする</v-btn>
         <v-btn
           v-if="books && books.length > 0"
@@ -38,7 +35,7 @@ const deleteBooks = () => {
         >
       </v-col>
     </v-row>
-    <v-row v-if="auth.uid">
+    <v-row v-if="uid">
       <v-col
         cols="12"
         xl="3"
