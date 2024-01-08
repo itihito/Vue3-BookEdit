@@ -9,10 +9,12 @@ const { isAuth } = defineProps(["isAuth"]);
 const logout = async () => {
   try {
     await signOut(auth);
+    console.log("ログアウト成功");
+    localStorage.removeItem("user");
     await router.push({ name: "Login" });
     location.reload();
   } catch (error) {
-    console.error(error);
+    console.log("ログアウト失敗");
   }
 };
 </script>

@@ -95,16 +95,17 @@ const deleteBooks = async () => {
     );
 
     updateBooks([]);
+    window.location.reload();
   }
 };
 
 // 編集画面に遷移
-const goToEditPage = (id: string) => {
-  router.push({
-    name: "BookEdit",
-    params: { bookId: id },
-  });
-};
+// const goToEditPage = (id: string) => {
+//   router.push({
+//     name: "BookEdit",
+//     params: { bookId: id },
+//   });
+// };
 
 // Indexに遷移
 const goToIndexPage = () => {
@@ -137,9 +138,6 @@ const updateBooks = (newBooks: Book[]) => {
 </script>
 
 <template>
-  <!-- <BookSearch /> -->
-  <!-- <LocalStorage />
-  <LocalStorage2 /> -->
   <v-app>
     <Header :isAuth="isAuth"></Header>
     <v-main>

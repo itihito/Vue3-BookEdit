@@ -16,7 +16,7 @@ const inputMemo = ref<string>("");
 const bookInfo = ref<Book>();
 let bookDetailInfo = ref<BookDetailInfo[]>([]);
 
-const emit = defineEmits(["update-book-info"]);
+const emit = defineEmits(["updateBookInfo"]);
 
 onMounted(async () => {
   const { historyDate, historyMemo } = getHistoryState();
@@ -89,7 +89,7 @@ const updateBookInfo = () => {
       updatedAt: new Date().toISOString(),
     } as Book;
 
-    emit("update-book-info", updateBook);
+    emit("updateBookInfo", updateBook);
   }
 };
 

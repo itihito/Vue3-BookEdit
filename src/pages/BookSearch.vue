@@ -41,8 +41,6 @@ const search = async (keyword: string) => {
   }
 };
 
-const emit = defineEmits(["add-book-list"]);
-
 const goToRegisterPage = (id: string) => {
   router.push({
     name: "BookRegister",

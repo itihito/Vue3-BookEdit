@@ -8,7 +8,7 @@ type Props = {
 };
 
 const { books } = defineProps<Props>();
-const emit = defineEmits(["deleteBookList", "delete-books"]);
+const emit = defineEmits(["deleteBookList", "deleteBooks"]);
 const deleteBook = (seq: number) => {
   emit("deleteBookList", seq);
 };
@@ -19,7 +19,7 @@ const auth = computed(() => {
 });
 
 const deleteBooks = () => {
-  emit("delete-books");
+  emit("deleteBooks");
 };
 </script>
 
