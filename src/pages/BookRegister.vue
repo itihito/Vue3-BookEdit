@@ -104,9 +104,9 @@ const setBookDetailInfo = () => {
   ];
 };
 
-const emit = defineEmits(["add-book-list"]);
+const emit = defineEmits(["addBookList"]);
 const addBookList = () => {
-  emit("add-book-list", {
+  emit("addBookList", {
     ...bookInfo.value,
     date: date.value,
     memo: inputMemo.value,
