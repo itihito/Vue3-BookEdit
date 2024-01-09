@@ -6,7 +6,8 @@ import { useStore } from "vuex";
 
 const router = useRouter();
 const store = useStore();
-const isAuth = !!store.getters["auth/getUid"];
+const { uid, name: userName, email: userEmail } = store.getters["auth/getUser"];
+const isAuth = !!uid;
 
 const logout = async () => {
   try {
@@ -28,9 +29,31 @@ const logout = async () => {
       <v-spacer></v-spacer>
       <v-sheet color="primary" v-if="isAuth">
         <v-btn class="bg-secondary" to="/"> 感想一覧 </v-btn>
-        <v-btn class="bg-error ml-4 mr-2" @click="logout"
-          >ログアウト<v-icon class="ml-2">mdi-logout</v-icon>
-        </v-btn>
+
+        <v-menu transition="scale-transition">
+          <template v-slot:activator="{ props }">
+            <v-btn class="bg-white ml-4 mr-2" color="primary" v-bind="props">
+              アカウント
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item>
+              <v-list-item-title>
+                <p>{{ userName || "名前未設定" }}さん</p>
+                <p class="d-flex justify-center text-subtitle-2">
+                  {{ userEmail }}
+                </p>
+              </v-list-item-title>
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item>
+              <v-list-item-title @click="logout" class="logout-item"
+                >ログアウト<v-icon class="ml-2">mdi-logout</v-icon>
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </v-sheet>
       <v-sheet color="primary" v-else="isAuth">
         <v-btn class="bg-white mr-2" color="indigo" to="/login"
@@ -41,4 +64,8 @@ const logout = async () => {
   </div>
 </template>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+.logout-item:hover {
+  cursor: pointer;
+}
+</style>

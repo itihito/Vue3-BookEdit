@@ -3,6 +3,7 @@ import type { Commit } from "vuex";
 type User = {
   name: string;
   uid: string;
+  email: string;
 };
 
 interface State {
@@ -15,7 +16,7 @@ const initUser = (): User => {
     const parsedUser = JSON.parse(user);
     return parsedUser;
   } else {
-    return { name: "", uid: "" };
+    return { name: "", uid: "", email: "" };
   }
 };
 
@@ -37,6 +38,9 @@ const actions = {
 };
 
 const getters = {
+  getUser(state: State): User {
+    return state.user;
+  },
   getUid(state: State): string {
     return state.user.uid;
   },
