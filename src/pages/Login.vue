@@ -47,7 +47,6 @@ const createAccount = () => {
     .then(async (userCredential) => {
       // 成功時処理
       userCredential.user;
-      console.log("userCredential.user", userCredential.user);
       const user = userCredential.user;
       store.dispatch("auth/SetUserStateAction", {
         name: user.email,
@@ -67,7 +66,7 @@ const createAccount = () => {
 onMounted(() => {
   // ログインしているユーザーを取得する
   onAuthStateChanged(auth, (user) => {
-    if (user && store.state.user?.uid) {
+    if (user && !!store.getters["auth/getUid"]) {
       // ログイン済み、かつuidがstoreに存在する場合はインデックス画面に遷移させる
       router.push("/");
     }

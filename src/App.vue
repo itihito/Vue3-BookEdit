@@ -5,7 +5,6 @@ import { onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { Book } from "./typings/Types";
-import { computed } from "vue";
 import {
   getDocs,
   updateDoc,
@@ -17,16 +16,17 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { db } from "./firebase/firebase.ts";
-import auth from "./store/auth";
 
 const router = useRouter();
 const books = ref<Book[]>([]);
-const store = useStore();
 const FIRESTORE_PATH = "books";
-const isAuth = computed(() => !!store.state.auth.user.uid);
+const store = useStore();
+const uid = store.getters["auth/getUid"];
 
 onMounted(async () => {
-  await fetchBooks();
+  if (uid) {
+    await fetchBooks();
+  }
 });
 
 // 本を追加
@@ -34,7 +34,7 @@ const addBook = async (book: Book) => {
   const currentSeq = getCurrentSeq();
   const addBook: Book = {
     ...book,
-    uid: auth.state.user.uid,
+    uid: uid,
     seq: currentSeq,
   };
 
@@ -72,7 +72,7 @@ const deleteBook = async (seq: number) => {
   const confirmMessage = `${book.title} を削除してもよろしいでしょうか`;
 
   if (confirm(confirmMessage)) {
-    const recordId = `${auth.state.user.uid}-${seq}`;
+    const recordId = `${uid}-${seq}`;
     await deleteDoc(doc(db, FIRESTORE_PATH, recordId));
 
     const updatedBooks = books.value.filter((book: Book) => book.seq !== seq);
@@ -85,7 +85,7 @@ const deleteBooks = async () => {
   const confirmMessage = "全ての本を削除してもよろしいでしょうか";
   if (confirm(confirmMessage)) {
     const booksData = await getDocs(
-      query(collection(db, "books"), where("uid", "==", auth.state.user.uid))
+      query(collection(db, "books"), where("uid", "==", uid))
     );
 
     await Promise.all(
@@ -116,7 +116,7 @@ const goToIndexPage = () => {
 
 const fetchBooks = async () => {
   const booksData = await getDocs(
-    query(collection(db, "books"), where("uid", "==", auth.state.user.uid))
+    query(collection(db, "books"), where("uid", "==", uid))
   );
   const fetchedBooks = booksData.docs.map((doc) => doc.data()) as Book[];
   if (fetchedBooks && fetchedBooks.length > 0) {
@@ -139,11 +139,11 @@ const updateBooks = (newBooks: Book[]) => {
 
 <template>
   <v-app>
-    <Header :isAuth="isAuth"></Header>
+    <Header></Header>
     <v-main>
       <v-container>
         <router-view
-          :isAuth="isAuth"
+          :uid="!!uid"
           :books="books"
           @add-book-list="addBook"
           @update-book-info="updateBookInfo"
