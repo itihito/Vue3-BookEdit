@@ -25,8 +25,9 @@ const signIn = () => {
       // 成功時処理
       const user = userCredential.user;
       store.dispatch("auth/SetUserStateAction", {
-        name: user.email,
+        name: user.displayName,
         uid: user.uid,
+        email: user.email,
       });
       await router.push("/");
       location.reload();
