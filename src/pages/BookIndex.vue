@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Props } from "../typings/Types";
+import { BooksProps } from "../typings/Types";
 
-const { books, uid } = defineProps<Props>();
+const { books, uid } = defineProps<BooksProps>();
 const emit = defineEmits(["deleteBookList", "deleteBooks"]);
 const deleteBook = (seq: number) => {
   emit("deleteBookList", seq);

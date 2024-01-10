@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { Book, BookDetailInfo, Props } from "../typings/Types";
+import { Book, BookDetailInfo, BooksProps } from "../typings/Types";
 import { getDocs, collection, where, query, limit } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useHistoryState, onBackupState } from "vue-history-state";
 import BookDetail from "../components/bookDetail.vue";
 
-const { uid } = defineProps<Props>();
+const { uid } = defineProps<BooksProps>();
 const route = useRoute();
 const bookId = route.params.bookId as string;
 const inputDate = ref<string | null>();

@@ -4,9 +4,9 @@ import { auth } from "../firebase/firebase.ts";
 import { ref, onMounted, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import { VForm } from "vuetify/lib/components/index.mjs";
-import { Props } from "../typings/Types";
+import { BooksProps } from "../typings/Types";
 
-const { uid } = defineProps<Props>();
+const { uid } = defineProps<BooksProps>();
 const userName = ref<string>("");
 const email = ref<string>("");
 const password = ref<string>("");

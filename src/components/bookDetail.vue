@@ -1,12 +1,7 @@
 <script setup lang="ts">
-// @ts-nocheck // lines="1"で型定義エラーが消えないため
-import { BookDetailInfo } from "../typings/Types";
+import { BookDetailProps } from "../typings/Types";
 
-type Props = {
-  bookDetailInfo: BookDetailInfo[];
-};
-
-const { bookDetailInfo } = defineProps<Props>();
+const { bookDetailInfo } = defineProps<BookDetailProps>();
 </script>
 
 <template>
@@ -15,7 +10,6 @@ const { bookDetailInfo } = defineProps<Props>();
       <v-card>
         <v-card-title class="pb-0">書籍情報</v-card-title>
         <v-list class="py-0 v-List">
-          <!-- eslint-ignore  -->
           <v-list-item
             v-for="bookInfo in bookDetailInfo"
             :key="bookInfo.label"

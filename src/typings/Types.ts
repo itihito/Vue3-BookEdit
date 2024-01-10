@@ -29,10 +29,20 @@ type BookDetailInfo = {
   value: string;
 };
 
-type Props = {
+type BooksProps = {
   books: Book[];
   uid: string;
 };
 
+type BookDetailProps = {
+  bookDetailInfo: BookDetailInfo[];
+};
+
 // まとめてエクスポート
-export type { Book, SearchResultBook, BookDetailInfo, Props };
+export type {
+  Book,
+  SearchResultBook,
+  BookDetailInfo,
+  BooksProps,
+  BookDetailProps,
+};
