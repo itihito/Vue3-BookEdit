@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import axiosClient from "../api/axiosClieant";
-import { Book, SearchResultBook } from "../typings/Types";
+import { Book, Props, SearchResultBook } from "../typings/Types";
 import router from "../router";
 import { useHistoryState, onBackupState } from "vue-history-state";
-
-type Props = {
-  books: Book[];
-};
 
 const keyword = ref<string>("");
 const searchResults = ref<SearchResultBook[]>([]);

@@ -16,15 +16,21 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { db } from "./firebase/firebase.ts";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { auth } from "./firebase/firebase.ts";
 
 const router = useRouter();
 const books = ref<Book[]>([]);
 const FIRESTORE_PATH = "books";
 const store = useStore();
-const uid = store.getters["auth/getUid"];
+const uid = ref(store.getters["auth/getUid"]);
 
 onMounted(async () => {
-  if (uid) {
+  if (uid.value) {
     await fetchBooks();
   }
 });
@@ -34,7 +40,7 @@ const addBook = async (book: Book) => {
   const currentSeq = getCurrentSeq();
   const addBook: Book = {
     ...book,
-    uid: uid,
+    uid: uid.value,
     seq: currentSeq,
   };
 
@@ -72,7 +78,7 @@ const deleteBook = async (seq: number) => {
   const confirmMessage = `${book.title} を削除してもよろしいでしょうか`;
 
   if (confirm(confirmMessage)) {
-    const recordId = `${uid}-${seq}`;
+    const recordId = `${uid.value}-${seq}`;
     await deleteDoc(doc(db, FIRESTORE_PATH, recordId));
 
     const updatedBooks = books.value.filter((book: Book) => book.seq !== seq);
@@ -85,7 +91,7 @@ const deleteBooks = async () => {
   const confirmMessage = "全ての本を削除してもよろしいでしょうか";
   if (confirm(confirmMessage)) {
     const booksData = await getDocs(
-      query(collection(db, "books"), where("uid", "==", uid))
+      query(collection(db, "books"), where("uid", "==", uid.value))
     );
 
     await Promise.all(
@@ -116,7 +122,7 @@ const goToIndexPage = () => {
 
 const fetchBooks = async () => {
   const booksData = await getDocs(
-    query(collection(db, "books"), where("uid", "==", uid))
+    query(collection(db, "books"), where("uid", "==", uid.value))
   );
   const fetchedBooks = booksData.docs.map((doc) => doc.data()) as Book[];
   if (fetchedBooks && fetchedBooks.length > 0) {
@@ -134,21 +140,78 @@ const updateBooks = (newBooks: Book[]) => {
   books.value = newBooks;
 };
 
+// サインイン
+const signIn = (email: string, password: string) => {
+  // メールアドレスとパスワードが入力されているかを確認
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then(async (userCredential) => {
+      // 成功時処理
+      const user = userCredential.user;
+      await store.dispatch("auth/SetUserStateAction", {
+        name: user.displayName,
+        uid: user.uid,
+        email: user.email,
+      });
+      uid.value = user.uid;
+      await fetchBooks();
+      await router.push("/");
+    })
+    .catch((error) => {
+      // 失敗時処理
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error(errorCode, errorMessage);
+    });
+};
+
+// ユーザー作成
+const createUser = async (
+  userName: string,
+  email: string,
+  password: string
+) => {
+  createUserWithEmailAndPassword(auth, email, password)
+    .then(async (userCredential) => {
+      const user = userCredential.user;
+
+      // ユーザーのdisplayNameを設定
+      await updateProfile(user, { displayName: userName });
+
+      // 成功時処理
+      store.dispatch("auth/SetUserStateAction", {
+        name: userName,
+        uid: user.uid,
+        email: user.email,
+      });
+      uid.value = user.uid;
+      await router.push("/");
+    })
+    .catch((error) => {
+      // 失敗時処理
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error(errorCode, errorMessage);
+    });
+};
+
 // TODO ソート機能を追加する？
 </script>
 
 <template>
   <v-app>
-    <Header></Header>
+    <Header :uid="uid"></Header>
     <v-main>
       <v-container>
         <router-view
-          :uid="!!uid"
+          :uid="uid"
           :books="books"
           @add-book-list="addBook"
           @update-book-info="updateBookInfo"
           @delete-Book-List="deleteBook"
           @delete-books="deleteBooks"
+          @sign-in-with-email-and-password="signIn"
+          @create-user-with-email-and-password="createUser"
         />
       </v-container>
     </v-main>

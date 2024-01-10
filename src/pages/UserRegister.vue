@@ -1,54 +1,35 @@
 <script setup lang="ts">
-import {
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  updateProfile,
-} from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/firebase.ts";
 import { ref, onMounted, computed, watch } from "vue";
-import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { VForm } from "vuetify/lib/components/index.mjs";
+import { Props } from "../typings/Types";
 
+const { uid } = defineProps<Props>();
 const userName = ref<string>("");
 const email = ref<string>("");
 const password = ref<string>("");
-const store = useStore();
 const router = useRouter();
 
 onMounted(() => {
   // ログインしているユーザーを取得する
   onAuthStateChanged(auth, (user) => {
-    if (user && !!store.getters["auth/getUid"]) {
+    if (user && !!uid) {
       // ログイン済み、かつuidがstoreに存在する場合はインデックス画面に遷移させる
       router.push("/");
     }
   });
 });
 
-const createUser = async () => {
-  createUserWithEmailAndPassword(auth, email.value, password.value)
-    .then(async (userCredential) => {
-      const user = userCredential.user;
-
-      // ユーザーのdisplayNameを設定
-      await updateProfile(user, { displayName: userName.value });
-
-      // 成功時処理
-      store.dispatch("auth/SetUserStateAction", {
-        name: userName.value,
-        uid: user.uid,
-        email: user.email,
-      });
-      await router.push("/");
-      location.reload();
-    })
-    .catch((error) => {
-      // 失敗時処理
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error(errorCode, errorMessage);
-    });
+const emit = defineEmits(["createUserWithEmailAndPassword"]);
+const createUser = () => {
+  emit(
+    "createUserWithEmailAndPassword",
+    userName.value,
+    email.value,
+    password.value
+  );
 };
 
 const form = ref<typeof VForm>();

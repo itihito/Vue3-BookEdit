@@ -4,10 +4,14 @@ import { auth } from "../firebase/firebase";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
+type Props = {
+  uid: string;
+};
+
 const router = useRouter();
 const store = useStore();
-const { uid, name: userName, email: userEmail } = store.getters["auth/getUser"];
-const isAuth = !!uid;
+const { name: userName, email: userEmail } = store.getters["auth/getUser"];
+const { uid } = defineProps<Props>();
 
 const logout = async () => {
   try {
@@ -27,7 +31,7 @@ const logout = async () => {
     <v-app-bar app color="primary" dark>
       <v-btn class="text-h5" href="/">読書感想アプリ</v-btn>
       <v-spacer></v-spacer>
-      <v-sheet color="primary" v-if="isAuth">
+      <v-sheet color="primary" v-if="!!uid">
         <v-btn class="bg-secondary" to="/"> 感想一覧 </v-btn>
 
         <v-menu transition="scale-transition">
@@ -55,7 +59,7 @@ const logout = async () => {
           </v-list>
         </v-menu>
       </v-sheet>
-      <v-sheet color="primary" v-else="isAuth">
+      <v-sheet color="primary" v-else="!!uid">
         <v-btn class="bg-white mr-2" color="indigo" to="/login"
           >ログイン<v-icon class="ml-2">mdi-login</v-icon>
         </v-btn>

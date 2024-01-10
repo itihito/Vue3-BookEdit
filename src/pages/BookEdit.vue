@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { Book, BookDetailInfo } from "../typings/Types";
+import { Book, BookDetailInfo, Props } from "../typings/Types";
 import { getDocs, collection, where, query, limit } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useHistoryState, onBackupState } from "vue-history-state";
 import BookDetail from "../components/bookDetail.vue";
-import { useStore } from "vuex";
 
+const { uid } = defineProps<Props>();
 const route = useRoute();
 const bookId = route.params.bookId as string;
 const inputDate = ref<string | null>();
@@ -33,8 +33,6 @@ const getHistoryState = () => {
 };
 
 const fetchBook = async (historyDate?: string, historyMemo?: string) => {
-  const store = useStore();
-  const uid = store.getters["auth/getUid"];
   const bookData = await getDocs(
     query(
       collection(db, "books"),

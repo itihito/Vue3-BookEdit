@@ -1,49 +1,29 @@
 <script setup lang="ts">
-import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/firebase.ts";
 import { ref, onMounted, computed, watch } from "vue";
-import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { VForm } from "vuetify/lib/components/index.mjs";
+import { Props } from "../typings/Types";
 
+const { uid } = defineProps<Props>();
 const email = ref<string>("");
 const password = ref<string>("");
-const store = useStore();
 const router = useRouter();
 
 onMounted(() => {
   // ログインしているユーザーを取得する
   onAuthStateChanged(auth, (user) => {
-    if (user && !!store.getters["auth/getUid"]) {
+    if (user && !!uid) {
       // ログイン済み、かつuidがstoreに存在する場合はインデックス画面に遷移させる
       router.push("/");
     }
   });
 });
 
-// サインイン処理
+const emit = defineEmits(["signInWithEmailAndPassword"]);
 const signIn = () => {
-  // メールアドレスとパスワードが入力されているかを確認
-  if (email.value === "" || password.value === "") return;
-
-  signInWithEmailAndPassword(auth, email.value, password.value)
-    .then(async (userCredential) => {
-      // 成功時処理
-      const user = userCredential.user;
-      store.dispatch("auth/SetUserStateAction", {
-        name: user.displayName,
-        uid: user.uid,
-        email: user.email,
-      });
-      await router.push("/");
-      location.reload();
-    })
-    .catch((error) => {
-      // 失敗時処理
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error(errorCode, errorMessage);
-    });
+  emit("signInWithEmailAndPassword", email.value, password.value);
 };
 
 // v-formのref="form"により自動的にバインドしている変数

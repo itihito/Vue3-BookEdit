@@ -1,19 +1,11 @@
 <script setup lang="ts">
-import { useStore } from "vuex";
-import { Book } from "../typings/Types";
+import { Props } from "../typings/Types";
 
-type Props = {
-  books: Book[];
-};
-
-const { books } = defineProps<Props>();
+const { books, uid } = defineProps<Props>();
 const emit = defineEmits(["deleteBookList", "deleteBooks"]);
 const deleteBook = (seq: number) => {
   emit("deleteBookList", seq);
 };
-
-const store = useStore();
-const uid = store.getters["auth/getUid"];
 
 const deleteBooks = () => {
   emit("deleteBooks");
