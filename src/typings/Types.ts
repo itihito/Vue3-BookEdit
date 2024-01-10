@@ -29,5 +29,10 @@ type BookDetailInfo = {
   value: string;
 };
 
+type Props = {
+  books: Book[];
+  uid: string;
+};
+
 // まとめてエクスポート
-export type { Book, SearchResultBook, BookDetailInfo };
+export type { Book, SearchResultBook, BookDetailInfo, Props };

@@ -1,10 +1,11 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import { useStore } from "vuex";
 import BookIndex from "../pages/BookIndex.vue";
 import BookSearch from "../pages/BookSearch.vue";
 import BookEdit from "../pages/BookEdit.vue";
 import Login from "../pages/Login.vue";
 import BookRegister from "../pages/BookRegister.vue";
-import { useStore } from "vuex";
+import UserRegister from "../pages/UserRegister.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -16,6 +17,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/login",
     name: "Login",
     component: Login,
+  },
+  {
+    path: "/user/register",
+    name: "UserRegister",
+    component: UserRegister,
   },
   {
     path: "/search",
