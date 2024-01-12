@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { BooksProps } from "../typings/Types";
+import SortBtn from "../components/SortBtn.vue";
+import { Book, BooksProps, SortBookProperties } from "../typings/Types";
 
 const { books, uid } = defineProps<BooksProps>();
-const emit = defineEmits(["deleteBookList", "deleteBooks"]);
+const emit = defineEmits(["deleteBookList", "deleteBooks", "sortBooks"]);
 const deleteBook = (seq: number) => {
   emit("deleteBookList", seq);
 };
@@ -10,21 +11,53 @@ const deleteBook = (seq: number) => {
 const deleteBooks = () => {
   emit("deleteBooks");
 };
+
+const sortBookProps: SortBookProperties[] = [
+  {
+    label: "読書日（新しい順）",
+    sortKey: "date",
+    order: "asc",
+  },
+  {
+    label: "読書日（古い順）",
+    sortKey: "date",
+    order: "desc",
+  },
+  {
+    label: "タイトル（昇順）",
+    sortKey: "title",
+    order: "asc",
+  },
+  {
+    label: "タイトル（降順）",
+    sortKey: "title",
+    order: "desc",
+  },
+];
+
+const sortBooks = (sortKey: keyof Book, order: string): void => {
+  emit("sortBooks", sortKey, order);
+};
 </script>
 
 <template>
   <div>
     <v-row>
-      <v-col cols="12" class="mx-auto mt-2 d-flex justify-space-between">
+      <v-col cols="12" class="mx-auto mt-2 d-flex">
         <v-btn color="primary" to="/search" v-if="uid">検索する</v-btn>
         <v-btn color="primary" to="/login" v-else>ログインする</v-btn>
+        <v-spacer></v-spacer>
         <v-btn
-          v-if="books && books.length > 0"
-          class="bg-error ml-4"
-          color=""
+          v-if="uid && books && books.length > 0"
+          class="bg-error mr-8"
           v-on:click="deleteBooks"
           >全ての本を削除する</v-btn
         >
+        <SortBtn
+          :sort-book-props="sortBookProps"
+          :books="books"
+          @sort-Books="sortBooks"
+        />
       </v-col>
     </v-row>
     <v-row v-if="uid">
@@ -73,5 +106,8 @@ const deleteBooks = () => {
 .headline {
   text-overflow: inherit;
   white-space: unset;
+}
+.logout-item:hover {
+  cursor: pointer;
 }
 </style>

@@ -1,7 +1,13 @@
 <script setup lang="ts">
+import SortBtn from "../components/SortBtn.vue";
 import { ref, onMounted } from "vue";
 import axiosClient from "../api/axiosClieant";
-import { Book, BooksProps, SearchResultBook } from "../typings/Types";
+import {
+  Book,
+  BooksProps,
+  SearchResultBook,
+  SortSearchResultBookProperties,
+} from "../typings/Types";
 import router from "../router";
 import { useHistoryState, onBackupState } from "vue-history-state";
 
@@ -18,9 +24,7 @@ const search = async (keyword: string) => {
   const response = await axiosClient.get("", { params });
 
   for (const book of response.data.items) {
-    const title = book.volumeInfo.title;
-    const img = book.volumeInfo.imageLinks;
-    const description = book.volumeInfo.description;
+    const { title, imageLinks, description, publishedDate } = book.volumeInfo;
     const bookId = book.id;
 
     const isAdded: boolean = books.some(
@@ -29,9 +33,10 @@ const search = async (keyword: string) => {
 
     searchResults.value.push({
       bookId: bookId,
-      title: title ? title : "",
+      title: title || "",
       description: description ? description.slice(0, 40) : "",
-      image: img ? img.thumbnail : "",
+      image: imageLinks ? imageLinks.thumbnail : "",
+      publishedDate: publishedDate || "",
       isAdded: isAdded,
     });
   }
@@ -59,29 +64,90 @@ onMounted(() => {
     searchResults.value = historyState.data.searchResults;
   }
 });
+
+const sortSearchResultBookProps: SortSearchResultBookProperties[] = [
+  {
+    label: "発売日（新しい順）",
+    sortKey: "publishedDate",
+    order: "desc",
+  },
+  {
+    label: "発売日（古い順）",
+    sortKey: "publishedDate",
+    order: "asc",
+  },
+  {
+    label: "タイトル（昇順）",
+    sortKey: "title",
+    order: "asc",
+  },
+  {
+    label: "タイトル（降順）",
+    sortKey: "title",
+    order: "desc",
+  },
+];
+
+const sortByKey = (sortKey: keyof SearchResultBook, order: "asc" | "desc") => {
+  return (a: SearchResultBook, b: SearchResultBook) => {
+    const comparison =
+      a[sortKey] < b[sortKey] ? -1 : a[sortKey] > b[sortKey] ? 1 : 0;
+    return order === "asc" ? comparison : -comparison;
+  };
+};
+
+// keyに基づいてbooksをソート
+const sortSearchResultBooks = (
+  sortKey: keyof SearchResultBook,
+  order: "asc" | "desc"
+) => {
+  let sortedBooks: SearchResultBook[] = [...searchResults.value];
+
+  switch (sortKey) {
+    case "title": // タイトル順
+    case "publishedDate": // 発売日順
+      sortedBooks.sort(sortByKey(sortKey, order));
+      break;
+    default:
+      console.error("Invalid property for sorting");
+  }
+
+  searchResults.value = sortedBooks;
+};
 </script>
 
 <template>
   <div>
     <!-- 検索インプット要素 -->
     <v-row class="d-flex justify-center">
-      <v-col cols="6" class="d-flex">
+      <v-col cols="6" class="d-flex pb-0">
         <v-text-field
           label="本のタイトルを検索"
           v-model="keyword"
           @keyup.enter="search(keyword)"
           autofocus
+          hide-details="auto"
         ></v-text-field>
         <v-btn
           color="primary"
           @click="search(keyword)"
-          height="70%"
+          height="100%"
           class="rounded-0 rounded-e-xl"
         >
           <v-icon color="white" size="x-large" class="search-icon"
             >mdi-magnify</v-icon
           >
         </v-btn>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col cols="12" class="mt-0 d-flex justify-end">
+        <SortBtn
+          :sort-book-props="sortSearchResultBookProps"
+          :books="searchResults"
+          @sort-Books="sortSearchResultBooks"
+        />
       </v-col>
     </v-row>
 
@@ -114,7 +180,7 @@ onMounted(() => {
                   color="white"
                   :disabled="book.isAdded"
                   v-on:click="goToRegisterPage(book.bookId)"
-                  ><v-icon>mdi-plus</v-icon>追加する
+                  ><v-icon>mdi-pencil</v-icon>感想を書く
                 </v-btn>
               </v-card-actions>
             </v-col>

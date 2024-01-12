@@ -21,6 +21,7 @@ type SearchResultBook = {
   title: string;
   description: string;
   image: string;
+  publishedDate: string;
   isAdded: boolean;
 };
 
@@ -38,6 +39,18 @@ type BookDetailProps = {
   bookDetailInfo: BookDetailInfo[];
 };
 
+type SortBookProperties = {
+  label: string;
+  sortKey: keyof Book;
+  order: "desc" | "asc";
+};
+
+type SortSearchResultBookProperties = {
+  label: string;
+  sortKey: keyof SearchResultBook;
+  order: "desc" | "asc";
+};
+
 // まとめてエクスポート
 export type {
   Book,
@@ -45,4 +58,6 @@ export type {
   BookDetailInfo,
   BooksProps,
   BookDetailProps,
+  SortBookProperties,
+  SortSearchResultBookProperties,
 };
