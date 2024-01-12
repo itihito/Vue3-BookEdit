@@ -105,14 +105,6 @@ const deleteBooks = async () => {
   }
 };
 
-// 編集画面に遷移
-// const goToEditPage = (id: string) => {
-//   router.push({
-//     name: "BookEdit",
-//     params: { bookId: id },
-//   });
-// };
-
 // Indexに遷移
 const goToIndexPage = () => {
   router.push({
@@ -195,7 +187,29 @@ const createUser = async (
     });
 };
 
-// TODO ソート機能を追加する？
+const sortByKey = (sortKey: keyof Book, order: "asc" | "desc") => {
+  return (a: Book, b: Book) => {
+    const comparison =
+      a[sortKey] < b[sortKey] ? -1 : a[sortKey] > b[sortKey] ? 1 : 0;
+    return order === "asc" ? comparison : -comparison;
+  };
+};
+
+// keyに基づいてbooksをソート
+const sortBooks = (sortKey: keyof Book, order: "asc" | "desc") => {
+  let sortedBooks: Book[] = [...books.value];
+
+  switch (sortKey) {
+    case "date": // 読書日順
+    case "title": // タイトル順
+      sortedBooks.sort(sortByKey(sortKey, order));
+      break;
+    default:
+      console.error("Invalid property for sorting");
+  }
+
+  updateBooks(sortedBooks);
+};
 </script>
 
 <template>
@@ -212,6 +226,7 @@ const createUser = async (
           @delete-books="deleteBooks"
           @sign-in-with-email-and-password="signIn"
           @create-user-with-email-and-password="createUser"
+          @sort-books="sortBooks"
         />
       </v-container>
     </v-main>
