@@ -35,6 +35,7 @@ const sortBooks = (
         :key="index"
       >
         <v-list-item-title
+          class="sort-item"
           @click="sortBooks(bookProp.sortKey, bookProp.order)"
           >{{ bookProp.label }}</v-list-item-title
         >
@@ -43,4 +44,8 @@ const sortBooks = (
   </v-menu>
 </template>
 
-<style scoped></style>
+<style scoped>
+.sort-item:hover {
+  cursor: pointer;
+}
+</style>
