@@ -24,8 +24,8 @@ const searchResults = ref<SearchResultBook[]>([]);
 // 現在のページ
 const currentPage = ref<number>(1);
 const maxPage = ref<number>(1);
-// 並び替え
-const orderBy = ref<GoogleBooksApiOrderBy>("relevance");
+// 現在の並び替え
+const currentOrderBy = ref<GoogleBooksApiOrderBy>("relevance");
 
 // 検索する
 const search = async (
@@ -36,16 +36,23 @@ const search = async (
 ) => {
   currentPage.value = searchPage;
   const params = getSearchParams(keyword, searchPage, orderBy);
-  const response = await axiosClient.get("", { params });
-  searchResults.value = getSearchResult(response);
+  try {
+    const response = await axiosClient.get("", { params });
+    searchResults.value = getSearchResult(response);
+    currentOrderBy.value = orderBy;
 
-  // 初回検索のみ行う処理
-  if (isInitSearch) {
-    searchedKeyword.value = keyword;
-    // 最大ページ数を設定
-    maxPage.value = Math.ceil(
-      Number(response.data.totalItems) / SEARCH_RESULT_LENGTH
-    );
+    console.log("response.data.totalItems", response.data.totalItems);
+
+    // 初回検索のみ行う処理
+    if (isInitSearch) {
+      searchedKeyword.value = keyword;
+      // 最大ページ数を設定
+      maxPage.value = Math.ceil(
+        Number(response.data.totalItems) / SEARCH_RESULT_LENGTH
+      );
+    }
+  } catch (error) {
+    console.error("error", error);
   }
 };
 
@@ -65,6 +72,9 @@ const getSearchParams = (
 
 const getSearchResult = (response: any): SearchResultBook[] => {
   const newResults: SearchResultBook[] = [];
+  if (!response.data.items || response.data.items.length === 0) {
+    throw new Error("search results could not be found.");
+  }
   for (const book of response.data.items) {
     const { title, imageLinks, description, publishedDate } = book.volumeInfo;
     const bookId = book.id;
@@ -85,9 +95,11 @@ const getSearchResult = (response: any): SearchResultBook[] => {
   return newResults;
 };
 
-// ページ遷移の度に検索する
+// v-paginationでcurrentPageが変更される度に検索する
 watch(currentPage, () => {
-  search(searchedKeyword.value, currentPage.value, false, orderBy.value);
+  search(searchedKeyword.value, currentPage.value, false, currentOrderBy.value);
+  // ページ上部にジャンプ
+  scrollTo({ top: 0, behavior: "smooth" });
 });
 
 const goToRegisterPage = (id: string) => {
@@ -139,7 +151,7 @@ const sortSearchResultBooks = (
   sortKey: GoogleBooksApiOrderBy,
   _order: "asc" | "desc" // SortBtnでの型定義エラー解消のため受け取るだけで使用しない
 ) => {
-  search(searchedKeyword.value, 1, true, sortKey);
+  search(searchedKeyword.value, 1, false, sortKey);
 };
 </script>
 
@@ -151,13 +163,13 @@ const sortSearchResultBooks = (
         <v-text-field
           label="本のタイトルを検索"
           v-model="keyword"
-          @keyup.enter="search(keyword, 1, true, orderBy)"
+          @keyup.enter="search(keyword, 1, true, 'relevance')"
           autofocus
           hide-details="auto"
         ></v-text-field>
         <v-btn
           color="primary"
-          @click="search(keyword, 1, true, orderBy)"
+          @click="search(keyword, 1, true, 'relevance')"
           height="100%"
           class="rounded-0 rounded-e-xl"
         >
