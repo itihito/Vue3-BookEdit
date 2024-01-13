@@ -43,7 +43,9 @@ const search = async (
   if (isInitSearch) {
     searchedKeyword.value = keyword;
     // 最大ページ数を設定
-    maxPage.value = Number(response.data.totalItems / SEARCH_RESULT_LENGTH);
+    maxPage.value = Math.ceil(
+      Number(response.data.totalItems) / SEARCH_RESULT_LENGTH
+    );
   }
 };
 
