@@ -4,6 +4,7 @@ import type {
   SearchResultBook,
   SortBookProperties,
   SortSearchResultBookProperties,
+  GoogleBooksApiOrderBy,
 } from "../typings/Types";
 
 type Props = {
@@ -14,7 +15,7 @@ type Props = {
 const { sortBookProps, books } = defineProps<Props>();
 const emit = defineEmits(["sort-books"]);
 const sortBooks = (
-  sortKey: keyof Book | keyof SearchResultBook,
+  sortKey: keyof Book | GoogleBooksApiOrderBy,
   order: string
 ) => {
   emit("sort-books", sortKey, order);
@@ -34,6 +35,7 @@ const sortBooks = (
         :key="index"
       >
         <v-list-item-title
+          class="sort-item"
           @click="sortBooks(bookProp.sortKey, bookProp.order)"
           >{{ bookProp.label }}</v-list-item-title
         >
@@ -42,4 +44,8 @@ const sortBooks = (
   </v-menu>
 </template>
 
-<style scoped></style>
+<style scoped>
+.sort-item:hover {
+  cursor: pointer;
+}
+</style>

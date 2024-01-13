@@ -127,6 +127,7 @@ const toToSearchPage = () => {
   router.back();
 };
 
+// ブラウザバックや画面更新で値が失われないようステートに保持
 onBackupState(() => {
   return {
     date: date.value,
@@ -137,6 +138,7 @@ onBackupState(() => {
 const getHistoryState = () => {
   const historyState = useHistoryState();
   return {
+    // 以前のステートが存在する場合、ステートをreturnする
     historyDate: historyState.data?.date || "",
     historyMemo: historyState.data?.inputMemo || "",
   };

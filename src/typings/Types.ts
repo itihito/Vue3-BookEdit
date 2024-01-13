@@ -47,9 +47,11 @@ type SortBookProperties = {
 
 type SortSearchResultBookProperties = {
   label: string;
-  sortKey: keyof SearchResultBook;
+  sortKey: GoogleBooksApiOrderBy;
   order: "desc" | "asc";
 };
+
+type GoogleBooksApiOrderBy = "relevance" | "newest";
 
 // まとめてエクスポート
 export type {
@@ -60,4 +62,5 @@ export type {
   BookDetailProps,
   SortBookProperties,
   SortSearchResultBookProperties,
+  GoogleBooksApiOrderBy,
 };

@@ -27,6 +27,7 @@ onMounted(async () => {
 const getHistoryState = () => {
   const historyState = useHistoryState();
   return {
+    // 過去のステートが存在する場合、ステートをreturnする
     historyDate: historyState.data?.date || "",
     historyMemo: historyState.data?.inputMemo || "",
   };
@@ -108,6 +109,7 @@ const updateDate = () => {
   }
 };
 
+// ブラウザバックや画面更新で値が失われないようステートに保持
 onBackupState(() => {
   return {
     date: date.value,
