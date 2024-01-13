@@ -1,28 +1,68 @@
 <script setup lang="ts">
 import SortBtn from "../components/SortBtn.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import axiosClient from "../api/axiosClieant";
 import {
   Book,
   BooksProps,
   SearchResultBook,
   SortSearchResultBookProperties,
+  GoogleBooksApiOrderBy,
 } from "../typings/Types";
 import router from "../router";
 import { useHistoryState, onBackupState } from "vue-history-state";
 
-const keyword = ref<string>("");
-const searchResults = ref<SearchResultBook[]>([]);
 const { books } = defineProps<BooksProps>();
+const SEARCH_RESULT_LENGTH = 40;
 
-const search = async (keyword: string) => {
-  searchResults.value = [];
+// 検索ワード
+const keyword = ref<string>("");
+// 現在検索しているワード。ページネーションで遷移する際に使用
+const searchedKeyword = ref<string>("");
+// 検索結果
+const searchResults = ref<SearchResultBook[]>([]);
+// 現在のページ
+const currentPage = ref<number>(1);
+const maxPage = ref<number>(1);
+// 並び替え
+const orderBy = ref<GoogleBooksApiOrderBy>("relevance");
+
+// 検索する
+const search = async (
+  keyword: string,
+  searchPage: number,
+  isInitSearch: boolean,
+  orderBy: GoogleBooksApiOrderBy
+) => {
+  currentPage.value = searchPage;
+  const params = getSearchParams(keyword, searchPage, orderBy);
+  const response = await axiosClient.get("", { params });
+  searchResults.value = getSearchResult(response);
+
+  // 初回検索のみ行う処理
+  if (isInitSearch) {
+    searchedKeyword.value = keyword;
+    // 最大ページ数を設定
+    maxPage.value = Number(response.data.totalItems / SEARCH_RESULT_LENGTH);
+  }
+};
+
+const getSearchParams = (
+  keyword: string,
+  searchPage: number,
+  orderBy: GoogleBooksApiOrderBy
+) => {
   const params = {
     q: `intitle:${keyword}`,
-    maxResults: "40",
+    startIndex: SEARCH_RESULT_LENGTH * (searchPage - 1),
+    maxResults: SEARCH_RESULT_LENGTH,
+    orderBy: orderBy,
   };
-  const response = await axiosClient.get("", { params });
+  return params;
+};
 
+const getSearchResult = (response: any): SearchResultBook[] => {
+  const newResults: SearchResultBook[] = [];
   for (const book of response.data.items) {
     const { title, imageLinks, description, publishedDate } = book.volumeInfo;
     const bookId = book.id;
@@ -31,7 +71,7 @@ const search = async (keyword: string) => {
       (existingBook: Book) => existingBook.bookId === bookId
     );
 
-    searchResults.value.push({
+    newResults.push({
       bookId: bookId,
       title: title || "",
       description: description ? description.slice(0, 40) : "",
@@ -40,7 +80,13 @@ const search = async (keyword: string) => {
       isAdded: isAdded,
     });
   }
+  return newResults;
 };
+
+// ページ遷移の度に検索する
+watch(currentPage, () => {
+  search(searchedKeyword.value, currentPage.value, false, orderBy.value);
+});
 
 const goToRegisterPage = (id: string) => {
   router.push({
@@ -49,70 +95,49 @@ const goToRegisterPage = (id: string) => {
   });
 };
 
+// ブラウザバックや画面更新で値が失われないようステートに保持
 onBackupState(() => {
   return {
     keyword: keyword.value,
     searchResults: searchResults.value,
+    maxPage: maxPage.value,
+    searchedKeyword: searchedKeyword.value,
+    currentPage: currentPage.value,
   };
 });
 
 onMounted(() => {
   const historyState = useHistoryState();
 
+  // 過去のステートが存在する場合、ステートから値を復元する
   if (historyState.data) {
     keyword.value = historyState.data.keyword;
     searchResults.value = historyState.data.searchResults;
+    maxPage.value = historyState.data.maxPage;
+    searchedKeyword.value = historyState.data.searchedKeyword;
+    currentPage.value = historyState.data.currentPage;
   }
 });
 
 const sortSearchResultBookProps: SortSearchResultBookProperties[] = [
   {
-    label: "発売日（新しい順）",
-    sortKey: "publishedDate",
+    label: "関連度",
+    sortKey: "relevance",
     order: "desc",
   },
   {
-    label: "発売日（古い順）",
-    sortKey: "publishedDate",
-    order: "asc",
-  },
-  {
-    label: "タイトル（昇順）",
-    sortKey: "title",
-    order: "asc",
-  },
-  {
-    label: "タイトル（降順）",
-    sortKey: "title",
+    label: "発売日（新しい順）",
+    sortKey: "newest",
     order: "desc",
   },
 ];
 
-const sortByKey = (sortKey: keyof SearchResultBook, order: "asc" | "desc") => {
-  return (a: SearchResultBook, b: SearchResultBook) => {
-    const comparison =
-      a[sortKey] < b[sortKey] ? -1 : a[sortKey] > b[sortKey] ? 1 : 0;
-    return order === "asc" ? comparison : -comparison;
-  };
-};
-
 // keyに基づいてbooksをソート
 const sortSearchResultBooks = (
-  sortKey: keyof SearchResultBook,
-  order: "asc" | "desc"
+  sortKey: GoogleBooksApiOrderBy,
+  _order: "asc" | "desc" // SortBtnでの型定義エラー解消のため受け取るだけで使用しない
 ) => {
-  let sortedBooks: SearchResultBook[] = [...searchResults.value];
-
-  switch (sortKey) {
-    case "title": // タイトル順
-    case "publishedDate": // 発売日順
-      sortedBooks.sort(sortByKey(sortKey, order));
-      break;
-    default:
-      console.error("Invalid property for sorting");
-  }
-
-  searchResults.value = sortedBooks;
+  search(searchedKeyword.value, 1, true, sortKey);
 };
 </script>
 
@@ -124,13 +149,13 @@ const sortSearchResultBooks = (
         <v-text-field
           label="本のタイトルを検索"
           v-model="keyword"
-          @keyup.enter="search(keyword)"
+          @keyup.enter="search(keyword, 1, true, orderBy)"
           autofocus
           hide-details="auto"
         ></v-text-field>
         <v-btn
           color="primary"
-          @click="search(keyword)"
+          @click="search(keyword, 1, true, orderBy)"
           height="100%"
           class="rounded-0 rounded-e-xl"
         >
@@ -141,6 +166,7 @@ const sortSearchResultBooks = (
       </v-col>
     </v-row>
 
+    <!-- 並び替えボタン -->
     <v-row>
       <v-col cols="12" class="mt-0 d-flex justify-end">
         <SortBtn
@@ -188,7 +214,19 @@ const sortSearchResultBooks = (
         </v-card>
       </v-col>
     </v-row>
-    <v-row></v-row>
+
+    <!-- ページネーション -->
+    <v-row justify="center">
+      <v-col cols="8">
+        <v-container class="max-width">
+          <v-pagination
+            v-model="currentPage"
+            class="my-4"
+            :length="maxPage"
+          ></v-pagination>
+        </v-container>
+      </v-col>
+    </v-row>
   </div>
 </template>
 

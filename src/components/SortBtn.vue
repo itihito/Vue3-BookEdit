@@ -4,6 +4,7 @@ import type {
   SearchResultBook,
   SortBookProperties,
   SortSearchResultBookProperties,
+  GoogleBooksApiOrderBy,
 } from "../typings/Types";
 
 type Props = {
@@ -14,7 +15,7 @@ type Props = {
 const { sortBookProps, books } = defineProps<Props>();
 const emit = defineEmits(["sort-books"]);
 const sortBooks = (
-  sortKey: keyof Book | keyof SearchResultBook,
+  sortKey: keyof Book | GoogleBooksApiOrderBy,
   order: string
 ) => {
   emit("sort-books", sortKey, order);
